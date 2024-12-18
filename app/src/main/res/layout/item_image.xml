@@ -2,10 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="@color/purple_200"
+        android:id="@+id/imgImage"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#DEDEDE"
         android:layout_margin="10dp"/>
 </LinearLayout>

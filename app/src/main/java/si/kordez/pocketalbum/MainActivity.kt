@@ -1,11 +1,11 @@
 package si.kordez.pocketalbum
 
 import android.os.Bundle
-import android.view.View
+import android.util.Log
 import android.widget.GridView
-import android.widget.ListView
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import si.kordez.pocketalbum.core.sqlite.SQLiteAlbum
 
 class MainActivity : ComponentActivity() {
 
@@ -16,6 +16,15 @@ class MainActivity : ComponentActivity() {
 
         val lstImages = findViewById<GridView>(R.id.lstImages)
 
-        lstImages.adapter = ImagesAdapter(baseContext)
+        try {
+            val album = SQLiteAlbum(baseContext)
+            val info = album.getInfo()
+            val averageSize = info.ImagesSize / info.ImageCount
+            val averageThumbSize = info.ThumbnailsSize / info.ImageCount
+
+            lstImages.adapter = ImagesAdapter(baseContext, album)
+        } catch (e: Exception) {
+            System.out.println()
+        }
     }
 }

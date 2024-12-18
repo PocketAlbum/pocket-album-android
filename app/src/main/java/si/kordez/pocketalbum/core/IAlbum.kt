@@ -1,22 +1,21 @@
 package si.kordez.pocketalbum.core
 
-import android.R.bool
-import android.R.string
-import android.graphics.ImageDecoder.ImageInfo
-
-
 interface IAlbum {
     fun getInfo(): AlbumInfo
 
-    fun getImage(id: Int): ImageInfo
+    fun getImage(id: String): ImageInfo
 
-    fun getThumbnail(id: Int): ByteArray
+    fun getThumbnail(id: String): ByteArray
 
-    fun getData(id: Int): ByteArray
+    fun getThumbnail(number: Int): ByteArray
+
+    fun getData(id: String): ByteArray
+
+    fun getImage(number: Int): ImageThumbnail
 
     fun getImages(from: Int, to: Int): List<ImageThumbnail>
 
-    fun imageExists(checksum: string): bool
+    fun imageExists(id: String): Boolean
 
     fun insert(image: ImageInfo, thumbnail: ByteArray, data: ByteArray)
 }
