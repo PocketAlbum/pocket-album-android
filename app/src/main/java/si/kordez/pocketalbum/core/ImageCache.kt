@@ -46,15 +46,34 @@ class ImageCache(val album: IAlbum) {
         return result
     }
 
-    fun get(number: Int, imageView: ImageView)
+    fun setThumbnail(number: Int, imageView: ImageView)
     {
         val block = number / 100
         val deferred = getDeferred(block)
         CoroutineScope(Job() + Dispatchers.IO).launch {
-            val image = deferred.await()[number]?.thumbnail
+            val image = deferred.await()[number]
             if (image != null) {
-                val bm = BitmapFactory.decodeByteArray(image, 0, image.size)
+                val thumbnail = image.thumbnail
+                val bm = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.size)
                 imageView.post {
+                    imageView.tag = image
+                    imageView.setImageBitmap(bm)
+                }
+            }
+        }
+    }
+
+    fun setImage(number: Int, imageView: ImageView)
+    {
+        val block = number / 100
+        val deferred = getDeferred(block)
+        CoroutineScope(Job() + Dispatchers.IO).launch {
+            val image = deferred.await()[number]
+            if (image != null) {
+                val data = album.getData(image.imageInfo.id)
+                val bm = BitmapFactory.decodeByteArray(data, 0, data.size)
+                imageView.post {
+                    imageView.tag = image
                     imageView.setImageBitmap(bm)
                 }
             }

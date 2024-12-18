@@ -12,18 +12,17 @@ import si.kordez.pocketalbum.core.IAlbum
 import si.kordez.pocketalbum.core.ImageCache
 
 
-class ImagesAdapter(ctx: Context, album: IAlbum) : BaseAdapter() {
+class ImagesAdapter(ctx: Context, album: IAlbum, val cache: ImageCache) : BaseAdapter() {
 
     val info = album.getInfo()
     val inflater = LayoutInflater.from(ctx)
-    val cache = ImageCache(album)
 
     override fun getCount(): Int {
         return info.ImageCount
     }
 
     override fun getItem(p0: Int): Any {
-        return "a"
+        return 0
     }
 
     override fun getItemId(i: Int): Long {
@@ -32,7 +31,7 @@ class ImagesAdapter(ctx: Context, album: IAlbum) : BaseAdapter() {
 
     override fun getView(i: Int, existing: View?, viewGroup: ViewGroup?): View {
         val view = existing ?: inflater.inflate(R.layout.item_image, null)
-        val imgImage = view.findViewById<ImageView>(R.id.imgImage)
+        val imgImage = view.findViewById<ImageView>(R.id.imgThumbnail)
 
         imgImage.scaleType = ImageView.ScaleType.CENTER_CROP
         if (viewGroup is GridView)
@@ -42,7 +41,7 @@ class ImagesAdapter(ctx: Context, album: IAlbum) : BaseAdapter() {
         }
         imgImage.setImageDrawable(null)
 
-        cache.get(i, imgImage)
+        cache.setThumbnail(i, imgImage)
 
         return view
     }
