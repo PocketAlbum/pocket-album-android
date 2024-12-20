@@ -8,8 +8,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.viewpager2.widget.ViewPager2
-import si.kordez.pocketalbum.core.ImageCache
 import si.kordez.pocketalbum.core.sqlite.SQLiteAlbum
+import si.kordez.pocketalbum.view.ImageCache
+import si.kordez.pocketalbum.view.ImagesAdapter
+import si.kordez.pocketalbum.view.ImagesRecyclerAdapter
 
 class MainActivity : ComponentActivity() {
 
@@ -50,4 +52,7 @@ class MainActivity : ComponentActivity() {
             System.out.println()
         }
     }
+
+
+
 }

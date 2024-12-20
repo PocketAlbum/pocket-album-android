@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.core
+package si.kordez.pocketalbum.view
 
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -9,6 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import si.kordez.pocketalbum.core.IAlbum
+import si.kordez.pocketalbum.core.ImageThumbnail
 import kotlin.math.min
 
 class ImageCache(val album: IAlbum) {

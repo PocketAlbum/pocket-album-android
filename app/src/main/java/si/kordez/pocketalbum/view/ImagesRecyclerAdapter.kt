@@ -1,17 +1,16 @@
-package si.kordez.pocketalbum
+package si.kordez.pocketalbum.view
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import si.kordez.pocketalbum.R
 import si.kordez.pocketalbum.core.IAlbum
-import si.kordez.pocketalbum.core.ImageCache
 
-class ImagesRecyclerAdapter(album: IAlbum, val cache: ImageCache)
+class ImagesRecyclerAdapter(album: IAlbum, private val cache: ImageCache)
     : RecyclerView.Adapter<ImagesRecyclerAdapter.ImageViewHolder>() {
 
-    val info = album.getInfo()
+    private val info = album.getInfo()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -25,11 +24,12 @@ class ImagesRecyclerAdapter(album: IAlbum, val cache: ImageCache)
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         holder.imageView.setImageDrawable(null)
+        holder.imageView.resetTransform()
         cache.setImage(position, holder.imageView)
     }
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
-        val imageView = itemView.findViewById<ImageView>(R.id.imgThumbnail);
+        val imageView = itemView.findViewById<ImageControl>(R.id.imgThumbnail);
     }
 }

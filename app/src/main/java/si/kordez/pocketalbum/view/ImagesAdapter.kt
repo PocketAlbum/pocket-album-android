@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum
+package si.kordez.pocketalbum.view
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,9 +8,8 @@ import android.widget.BaseAdapter
 import android.widget.GridView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import si.kordez.pocketalbum.R
 import si.kordez.pocketalbum.core.IAlbum
-import si.kordez.pocketalbum.core.ImageCache
-
 
 class ImagesAdapter(ctx: Context, album: IAlbum, val cache: ImageCache) : BaseAdapter() {
 
