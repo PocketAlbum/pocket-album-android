@@ -1,12 +1,15 @@
 import android.graphics.Matrix
 import android.graphics.PointF
+import android.util.Log
+import android.view.View
 import android.view.animation.Animation
-import android.view.animation.DecelerateInterpolator
 import android.view.animation.Transformation
+import kotlin.math.min
 
 class MatrixAnimation(
-    startMatrix: Matrix,
-    endMatrix: Matrix
+    private val startMatrix: Matrix,
+    endMatrix: Matrix,
+    val view : View
 ) : Animation() {
     private val scaleStart: PointF
     private val scaleEnd: PointF
@@ -36,7 +39,6 @@ class MatrixAnimation(
         )
 
         fillAfter = true
-        setInterpolator(DecelerateInterpolator())
     }
 
     protected fun setAnimated(animated: Boolean): MatrixAnimation {
@@ -45,22 +47,34 @@ class MatrixAnimation(
         return this
     }
 
-    override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-        super.applyTransformation(interpolatedTime, t)
-        val matrix = t.matrix
+    override fun getTransformation(currentTime: Long, outTransformation: Transformation?): Boolean {
+        val r = super.getTransformation(currentTime, outTransformation)
+        val t = min((currentTime - startTime) / duration.toFloat(), 1f)
+        Log.i("Animation", "Get Transformation more: ${r} (time: ${currentTime}) t: ${t}")
+        val matrix = startMatrix
         val sFactor = PointF(
-            scaleEnd.x * interpolatedTime / scaleStart.x + 1 - interpolatedTime,
-            scaleEnd.y * interpolatedTime / scaleStart.y + 1 - interpolatedTime
+            scaleEnd.x * t / scaleStart.x + 1 - t,
+            scaleEnd.y * t / scaleStart.y + 1 - t
         )
         val tFactor = PointF(
-            (translateEnd.x - translateStart.x) * interpolatedTime,
-            (translateEnd.y - translateStart.y) * interpolatedTime
+            (translateEnd.x - translateStart.x) * t,
+            (translateEnd.y - translateStart.y) * t
         )
-
+        matrix.reset()
         matrix.postScale(scaleStart.x, scaleStart.y, 0f, 0f)
         matrix.postScale(sFactor.x, sFactor.y, 0f, 0f)
         matrix.postTranslate(translateStart.x, translateStart.y)
         matrix.postTranslate(tFactor.x, tFactor.y)
+        view.invalidate()
+        return r
+    }
+
+    override fun getTransformation(
+        currentTime: Long,
+        outTransformation: Transformation?,
+        scale: Float
+    ): Boolean {
+        return getTransformation(currentTime, outTransformation)
     }
 
     override fun start() {
