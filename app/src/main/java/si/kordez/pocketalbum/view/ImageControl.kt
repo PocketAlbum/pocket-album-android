@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.GestureDetector.OnGestureListener
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.ScaleGestureDetector.OnScaleGestureListener
@@ -12,37 +14,41 @@ import android.widget.ImageView
 import androidx.viewpager2.widget.ViewPager2
 
 class ImageControl(context: Context, attrs: AttributeSet?) : ImageView(context, attrs),
-    OnScaleGestureListener{
+    OnScaleGestureListener, OnGestureListener {
 
-    val gestureListener = ScaleGestureDetector(context, this)
-    val m = Matrix()
+    private val scaleDetector = ScaleGestureDetector(context, this)
+    private val tapDetector = GestureDetector(context, this)
+    private val transformMatrix = Matrix()
+    private var scaling = false
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        gestureListener.onTouchEvent(event)
+        tapDetector.onTouchEvent(event)
+        scaleDetector.onTouchEvent(event)
         return true
     }
 
     override fun onDraw(canvas: Canvas) {
         if (animation == null || animation.hasEnded()) {
-            canvas.setMatrix(m)
+            canvas.setMatrix(transformMatrix)
         }
         super.onDraw(canvas)
     }
 
     fun resetTransform() {
-        m.reset()
+        transformMatrix.reset()
     }
 
     override fun onScale(detector: ScaleGestureDetector): Boolean {
-        m.postTranslate(-detector.focusX, -detector.focusY)
-        m.postScale(detector.scaleFactor, detector.scaleFactor)
-        m.postTranslate(detector.focusX, detector.focusY)
+        transformMatrix.postTranslate(-detector.focusX, -detector.focusY)
+        transformMatrix.postScale(detector.scaleFactor, detector.scaleFactor)
+        transformMatrix.postTranslate(detector.focusX, detector.focusY)
 
         invalidate()
         return true
     }
 
     override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+        scaling = true
         val p3 = parent?.parent?.parent
         if (p3 is ViewPager2)
         {
@@ -52,10 +58,10 @@ class ImageControl(context: Context, attrs: AttributeSet?) : ImageView(context, 
     }
 
     override fun onScaleEnd(detector: ScaleGestureDetector) {
-
-        val scale = getScale(m)
+        scaling = false
+        val scale = getScale(transformMatrix)
         if (scale < 1.1f) {
-            val animator = MatrixAnimation(m, Matrix())
+            val animator = MatrixAnimation(transformMatrix, Matrix())
             animator.duration = 500
             startAnimation(animator)
             resetTransform()
@@ -74,5 +80,45 @@ class ImageControl(context: Context, attrs: AttributeSet?) : ImageView(context, 
         val v = FloatArray(9)
         m.getValues(v)
         return v[0]
+    }
+
+    override fun onDown(e: MotionEvent): Boolean {
+        return true
+    }
+
+    override fun onShowPress(e: MotionEvent) {
+
+    }
+
+    override fun onSingleTapUp(e: MotionEvent): Boolean {
+        return true
+    }
+
+    override fun onScroll(
+        e1: MotionEvent?,
+        e2: MotionEvent,
+        distanceX: Float,
+        distanceY: Float
+    ): Boolean {
+        if (!scaling && getScale(transformMatrix) > 1.1) {
+            transformMatrix.postTranslate(-distanceX, -distanceY)
+            checkTranslation(transformMatrix)
+            invalidate()
+        }
+        return true
+    }
+
+    override fun onLongPress(e: MotionEvent) {
+
+    }
+
+    override fun onFling(
+        e1: MotionEvent?,
+        e2: MotionEvent,
+        velocityX: Float,
+        velocityY: Float
+    ): Boolean {
+        
+        return true
     }
 }
