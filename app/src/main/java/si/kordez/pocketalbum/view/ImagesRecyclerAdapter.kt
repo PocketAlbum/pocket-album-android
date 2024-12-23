@@ -7,7 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import si.kordez.pocketalbum.R
 import si.kordez.pocketalbum.core.IAlbum
 
-class ImagesRecyclerAdapter(album: IAlbum, private val cache: ImageCache)
+class ImagesRecyclerAdapter(
+    album: IAlbum,
+    private val cache: ImageCache,
+    private val onImageActions: ImageControl.OnImageActions
+)
     : RecyclerView.Adapter<ImagesRecyclerAdapter.ImageViewHolder>() {
 
     private val info = album.getInfo()
@@ -19,17 +23,18 @@ class ImagesRecyclerAdapter(album: IAlbum, private val cache: ImageCache)
     }
 
     override fun getItemCount(): Int {
-        return info.ImageCount
+        return info.imageCount
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         holder.imageView.setImageDrawable(null)
         holder.imageView.resetTransform()
         cache.setImage(position, holder.imageView)
+        holder.imageView.setOnImageActionsListener(onImageActions)
     }
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
-        val imageView = itemView.findViewById<ImageControl>(R.id.imgThumbnail);
+        val imageView = itemView.findViewById<ImageControl>(R.id.imgThumbnail)
     }
 }

@@ -21,6 +21,7 @@ class ImageControl(context: Context, attrs: AttributeSet?) : ImageView(context, 
     private val scaleDetector = ScaleGestureDetector(context, this)
     private val tapDetector = GestureDetector(context, this)
     private val transformMatrix = Matrix()
+    private var imageActionsListener : OnImageActions? = null
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         tapDetector.onTouchEvent(event)
@@ -55,7 +56,7 @@ class ImageControl(context: Context, attrs: AttributeSet?) : ImageView(context, 
         val scale = getScale(transformMatrix)
         if (scale < 1.1f) {
             val animator = MatrixAnimation(transformMatrix, Matrix(), this)
-            animator.duration = 400
+            animator.duration = 300
             startAnimation(animator)
             unlockSwiping()
         }
@@ -113,6 +114,7 @@ class ImageControl(context: Context, attrs: AttributeSet?) : ImageView(context, 
     }
 
     override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+        imageActionsListener?.toggleShowDetails()
         return true
     }
 
@@ -128,7 +130,7 @@ class ImageControl(context: Context, attrs: AttributeSet?) : ImageView(context, 
             destination.postTranslate(e.x, e.y)
         }
         val animator = MatrixAnimation(transformMatrix, destination, this)
-        animator.duration = 400
+        animator.duration = 300
         startAnimation(animator)
         return true
     }
@@ -153,5 +155,13 @@ class ImageControl(context: Context, attrs: AttributeSet?) : ImageView(context, 
                 p3.isUserInputEnabled = true
             }, 200)
         }
+    }
+
+    fun setOnImageActionsListener(listener: OnImageActions) {
+        imageActionsListener = listener
+    }
+
+    fun interface OnImageActions {
+        fun toggleShowDetails()
     }
 }

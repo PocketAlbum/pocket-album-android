@@ -11,13 +11,13 @@ import android.widget.LinearLayout
 import si.kordez.pocketalbum.R
 import si.kordez.pocketalbum.core.IAlbum
 
-class ImagesAdapter(ctx: Context, album: IAlbum, val cache: ImageCache) : BaseAdapter() {
+class ImagesAdapter(ctx: Context, album: IAlbum, private val cache: ImageCache) : BaseAdapter() {
 
-    val info = album.getInfo()
-    val inflater = LayoutInflater.from(ctx)
+    private val info = album.getInfo()
+    private val inflater = LayoutInflater.from(ctx)
 
     override fun getCount(): Int {
-        return info.ImageCount
+        return info.imageCount
     }
 
     override fun getItem(p0: Int): Any {

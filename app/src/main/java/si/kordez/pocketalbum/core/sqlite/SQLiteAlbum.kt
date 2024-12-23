@@ -1,11 +1,9 @@
 package si.kordez.pocketalbum.core.sqlite
 
-import DatabaseHelper
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
-import getDoubleOrNull
 import si.kordez.pocketalbum.core.AlbumInfo
 import si.kordez.pocketalbum.core.IAlbum
 import si.kordez.pocketalbum.core.ImageInfo

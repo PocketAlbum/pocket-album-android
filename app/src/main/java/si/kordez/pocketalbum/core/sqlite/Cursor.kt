@@ -1,3 +1,5 @@
+package si.kordez.pocketalbum.core.sqlite
+
 import android.database.Cursor
 
 fun Cursor.getDoubleOrNull(columnName: String): Double? {

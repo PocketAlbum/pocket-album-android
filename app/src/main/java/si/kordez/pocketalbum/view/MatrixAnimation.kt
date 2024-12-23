@@ -9,13 +9,12 @@ import kotlin.math.min
 class MatrixAnimation(
     private val startMatrix: Matrix,
     endMatrix: Matrix,
-    val view : View
+    private val view : View
 ) : Animation() {
     private val scaleStart: PointF
     private val scaleEnd: PointF
     private val translateStart: PointF
     private val translateEnd: PointF
-    private var animated = true
 
     init {
         val a = FloatArray(9)
@@ -39,12 +38,6 @@ class MatrixAnimation(
         )
 
         fillAfter = true
-    }
-
-    protected fun setAnimated(animated: Boolean): MatrixAnimation {
-        this.animated = animated
-        duration = (if (animated) 300 else 0).toLong()
-        return this
     }
 
     override fun getTransformation(currentTime: Long, outTransformation: Transformation?): Boolean {
@@ -78,7 +71,7 @@ class MatrixAnimation(
     }
 
     override fun start() {
-        setAnimated(true)
+        duration = 300
         super.start()
     }
 }

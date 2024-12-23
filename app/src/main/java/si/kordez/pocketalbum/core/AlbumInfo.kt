@@ -1,8 +1,8 @@
 package si.kordez.pocketalbum.core
 
 data class AlbumInfo(
-    val ImageCount: Int,
-    val DateCount: Int,
-    val ThumbnailsSize: Long,
-    val ImagesSize: Long
+    val imageCount: Int,
+    val dateCount: Int,
+    val thumbnailsSize: Long,
+    val imagesSize: Long
 )

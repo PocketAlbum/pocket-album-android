@@ -2,4 +2,12 @@
 <resources>
 
     <style name="Theme.PocketAlbum" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="ImageTools">
+        <item name="android:background">#000</item>
+        <item name="android:textColor">#FFF</item>
+    </style>
+    <style name="ImageTools.Label">
+        <item name="android:textSize">20sp</item>
+    </style>
 </resources>

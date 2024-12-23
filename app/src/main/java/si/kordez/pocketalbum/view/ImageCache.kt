@@ -1,5 +1,7 @@
 package si.kordez.pocketalbum.view
 
+import android.content.res.Resources.NotFoundException
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.ImageView
@@ -14,7 +16,7 @@ import si.kordez.pocketalbum.core.ImageThumbnail
 import kotlin.math.min
 
 class ImageCache(val album: IAlbum) {
-    val futures = HashMap<Int, Deferred<HashMap<Int, ImageThumbnail>>>()
+    private val futures = HashMap<Int, Deferred<HashMap<Int, ImageThumbnail>>>()
 
     private fun getDeferred(block: Int): Deferred<HashMap<Int, ImageThumbnail>>
     {
@@ -35,7 +37,7 @@ class ImageCache(val album: IAlbum) {
         }
     }
 
-    fun loadImages(block: Int): HashMap<Int, ImageThumbnail>
+    private fun loadImages(block: Int): HashMap<Int, ImageThumbnail>
     {
         val first = block * 100
         val last = ((block + 1) * 100) - 1
@@ -80,5 +82,24 @@ class ImageCache(val album: IAlbum) {
                 }
             }
         }
+    }
+
+    suspend fun getImage(number: Int): ImageThumbnail
+    {
+        val block = number / 100
+        val image = getDeferred(block).await()[number]
+            ?: throw NotFoundException("Image number $number not found")
+        return image
+    }
+
+    suspend fun getData(number: Int): Bitmap {
+        val image = getImage(number)
+        val data = album.getData(image.imageInfo.id)
+        return BitmapFactory.decodeByteArray(data, 0, data.size)
+    }
+
+    fun getData(id: String): Bitmap {
+        val data = album.getData(id)
+        return BitmapFactory.decodeByteArray(data, 0, data.size)
     }
 }

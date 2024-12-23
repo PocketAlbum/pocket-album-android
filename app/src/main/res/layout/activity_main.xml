@@ -13,10 +13,69 @@
         android:padding="8dp"
         android:stretchMode="columnWidth"
         />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vpgImages"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
         android:background="#000"/>
+
+    <LinearLayout
+        android:id="@+id/lltDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        android:padding="5dp"
+        style="@style/ImageTools">
+        <TextView
+            android:id="@+id/lblDateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ImageTools.Label"
+            android:layout_margin="5dp"/>
+        <TextView
+            android:id="@+id/lblCoordinates"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ImageTools"
+            android:layout_margin="5dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lltActions"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="invisible">
+        <Button
+            android:id="@+id/btnMap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTint="@color/purple_200"
+            style="@style/ImageTools"
+            android:text="Map"
+            />
+        <Button
+            android:id="@+id/btnShare"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTint="@color/purple_200"
+            style="@style/ImageTools"
+            android:text="Share"
+            />
+        <Button
+            android:id="@+id/btnInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTint="@color/purple_200"
+            style="@style/ImageTools"
+            android:text="Info"
+            />
+    </LinearLayout>
 </FrameLayout>
