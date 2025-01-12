@@ -1,6 +1,7 @@
 package si.kordez.pocketalbum.view
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +9,15 @@ import android.widget.BaseAdapter
 import android.widget.GridView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import si.kordez.pocketalbum.R
 import si.kordez.pocketalbum.core.IAlbum
+import si.kordez.pocketalbum.core.ImageCache
 
 class ImagesAdapter(ctx: Context, album: IAlbum, private val cache: ImageCache) : BaseAdapter() {
 
@@ -30,18 +38,33 @@ class ImagesAdapter(ctx: Context, album: IAlbum, private val cache: ImageCache) 
 
     override fun getView(i: Int, existing: View?, viewGroup: ViewGroup?): View {
         val view = existing ?: inflater.inflate(R.layout.item_image, null)
-        val imgImage = view.findViewById<ImageView>(R.id.imgThumbnail)
+        val imageView = view.findViewById<ImageView>(R.id.imgThumbnail)
 
-        imgImage.scaleType = ImageView.ScaleType.CENTER_CROP
+        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
         if (viewGroup is GridView)
         {
             val w = viewGroup.columnWidth
-            imgImage.layoutParams = LinearLayout.LayoutParams(w, w)
+            imageView.layoutParams = LinearLayout.LayoutParams(w, w)
         }
-        imgImage.setImageDrawable(null)
+        imageView.setImageDrawable(null)
 
-        cache.setThumbnail(i, imgImage)
+        val tag = imageView.tag
+        if (tag is Job)
+        {
+            tag.cancel()
+        }
 
+        imageView.tag = CoroutineScope(Job() + Dispatchers.IO).launch {
+            delay(100)
+            val image = cache.getImage(i)
+            val thumbnail = image.thumbnail
+            val bm = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.size)
+            if (isActive) {
+                imageView.post {
+                    imageView.setImageBitmap(bm)
+                }
+            }
+        }
         return view
     }
 }

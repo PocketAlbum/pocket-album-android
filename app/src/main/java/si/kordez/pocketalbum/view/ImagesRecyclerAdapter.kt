@@ -4,8 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import si.kordez.pocketalbum.R
 import si.kordez.pocketalbum.core.IAlbum
+import si.kordez.pocketalbum.core.ImageCache
 
 class ImagesRecyclerAdapter(
     album: IAlbum,
@@ -29,7 +34,12 @@ class ImagesRecyclerAdapter(
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         holder.imageView.setImageDrawable(null)
         holder.imageView.resetTransform()
-        cache.setImage(position, holder.imageView)
+        CoroutineScope(Job() + Dispatchers.IO).launch {
+            val bitmap = cache.getData(position)
+            holder.imageView.post {
+                holder.imageView.setImageBitmap(bitmap)
+            }
+        }
         holder.imageView.setOnImageActionsListener(onImageActions)
     }
 

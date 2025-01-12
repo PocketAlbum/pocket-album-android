@@ -1,22 +1,19 @@
-package si.kordez.pocketalbum.view
+package si.kordez.pocketalbum.core
 
 import android.content.res.Resources.NotFoundException
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import android.widget.ImageView
+import android.util.LruCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import si.kordez.pocketalbum.core.IAlbum
-import si.kordez.pocketalbum.core.ImageThumbnail
 import kotlin.math.min
 
-class ImageCache(val album: IAlbum) {
-    private val futures = HashMap<Int, Deferred<HashMap<Int, ImageThumbnail>>>()
+class ImageCache(private val album: IAlbum) {
+    private val futures = LruCache<Int, Deferred<HashMap<Int, ImageThumbnail>>>(10)
 
     private fun getDeferred(block: Int): Deferred<HashMap<Int, ImageThumbnail>>
     {
@@ -24,11 +21,11 @@ class ImageCache(val album: IAlbum) {
         {
             val future = futures[block]
             if (future == null) {
-                Log.i("ImageCache", "Starting loading images for block ${block}")
+                Log.i("ImageCache", "Loading block $block, cache size ${futures.size()}")
                 val result = CoroutineScope(Job() + Dispatchers.IO).async {
                     loadImages(block)
                 }
-                futures[block] = result
+                futures.put(block, result)
                 return result
             }
             else {
@@ -48,40 +45,6 @@ class ImageCache(val album: IAlbum) {
             result[i + first] = images[i]
         }
         return result
-    }
-
-    fun setThumbnail(number: Int, imageView: ImageView)
-    {
-        val block = number / 100
-        val deferred = getDeferred(block)
-        CoroutineScope(Job() + Dispatchers.IO).launch {
-            val image = deferred.await()[number]
-            if (image != null) {
-                val thumbnail = image.thumbnail
-                val bm = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.size)
-                imageView.post {
-                    imageView.tag = image
-                    imageView.setImageBitmap(bm)
-                }
-            }
-        }
-    }
-
-    fun setImage(number: Int, imageView: ImageView)
-    {
-        val block = number / 100
-        val deferred = getDeferred(block)
-        CoroutineScope(Job() + Dispatchers.IO).launch {
-            val image = deferred.await()[number]
-            if (image != null) {
-                val data = album.getData(image.imageInfo.id)
-                val bm = BitmapFactory.decodeByteArray(data, 0, data.size)
-                imageView.post {
-                    imageView.tag = image
-                    imageView.setImageBitmap(bm)
-                }
-            }
-        }
     }
 
     suspend fun getImage(number: Int): ImageThumbnail

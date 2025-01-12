@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import si.kordez.pocketalbum.core.IAlbum
 import si.kordez.pocketalbum.core.ImageInfo
 import si.kordez.pocketalbum.core.sqlite.SQLiteAlbum
-import si.kordez.pocketalbum.view.ImageCache
+import si.kordez.pocketalbum.core.ImageCache
 import si.kordez.pocketalbum.view.ImagesAdapter
 import si.kordez.pocketalbum.view.ImagesRecyclerAdapter
 import java.io.File
