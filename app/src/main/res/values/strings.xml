@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">PocketAlbum</string>
+    <string name="map">Map</string>
+    <string name="share">Share</string>
+    <string name="info">Info</string>
+    <string name="close">Close</string>
+    <string name="file_name">File name: %1$s</string>
+    <string name="created">Created: %1$s</string>
+    <string name="location">Location: %1$s</string>
+    <string name="dimensions">Dimensions: %1$d × %2$d</string>
+    <string name="original_size">Original size: %1$s</string>
 </resources>
