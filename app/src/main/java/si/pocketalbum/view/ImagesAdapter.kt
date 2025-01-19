@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.view
+package si.pocketalbum.view
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -15,9 +15,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import si.kordez.pocketalbum.R
-import si.kordez.pocketalbum.core.IAlbum
-import si.kordez.pocketalbum.core.ImageCache
+import si.pocketalbum.R
+import si.pocketalbum.core.IAlbum
+import si.pocketalbum.core.ImageCache
 
 class ImagesAdapter(ctx: Context, album: IAlbum, private val cache: ImageCache) : BaseAdapter() {
 

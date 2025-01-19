@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum
+package si.pocketalbum
 
 import android.os.Bundle
 import android.util.Log
@@ -8,10 +8,10 @@ import android.widget.GridView
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
-import si.kordez.pocketalbum.core.ImageCache
-import si.kordez.pocketalbum.core.sqlite.SQLiteAlbum
-import si.kordez.pocketalbum.view.ImagesAdapter
-import si.kordez.pocketalbum.view.SlidingGallery
+import si.pocketalbum.core.ImageCache
+import si.pocketalbum.core.sqlite.SQLiteAlbum
+import si.pocketalbum.view.ImagesAdapter
+import si.pocketalbum.view.SlidingGallery
 
 class MainActivity : ComponentActivity() {
 

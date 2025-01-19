@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.core
+package si.pocketalbum.core
 
 data class ImageInfo (
     val id: String,

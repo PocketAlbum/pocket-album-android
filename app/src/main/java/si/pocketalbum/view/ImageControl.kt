@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.view
+package si.pocketalbum.view
 
 import MatrixAnimation
 import android.content.Context

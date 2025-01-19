@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.core
+package si.pocketalbum.core
 
 interface IAlbum {
     fun getInfo(): AlbumInfo

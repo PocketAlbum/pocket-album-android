@@ -14,7 +14,7 @@
         android:stretchMode="columnWidth"
         />
 
-    <si.kordez.pocketalbum.view.SlidingGallery
+    <si.pocketalbum.view.SlidingGallery
         android:id="@+id/slidingGallery"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

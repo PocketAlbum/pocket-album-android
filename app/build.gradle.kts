@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "si.kordez.pocketalbum"
+    namespace = "si.pocketalbum"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "si.kordez.pocketalbum"
+        applicationId = "si.pocketalbum"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

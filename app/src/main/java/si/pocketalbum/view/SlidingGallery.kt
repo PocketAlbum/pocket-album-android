@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.view
+package si.pocketalbum.view
 
 import android.app.Dialog
 import android.content.Context
@@ -23,10 +23,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import si.kordez.pocketalbum.R
-import si.kordez.pocketalbum.core.IAlbum
-import si.kordez.pocketalbum.core.ImageCache
-import si.kordez.pocketalbum.core.ImageInfo
+import si.pocketalbum.R
+import si.pocketalbum.core.IAlbum
+import si.pocketalbum.core.ImageCache
+import si.pocketalbum.core.ImageInfo
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -178,7 +178,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
             fileStream.write(album?.getData(image.id))
             fileStream.close()
 
-            val uri: Uri = getUriForFile(context, "si.kordez.pocketalbum", file)
+            val uri: Uri = getUriForFile(context, "si.pocketalbum", file)
             ShareCompat.IntentBuilder(context)
                 .setType("image/jpeg")
                 .addStream(uri)

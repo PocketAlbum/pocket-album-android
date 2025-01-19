@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.core.sqlite
+package si.pocketalbum.core.sqlite
 
 import android.database.Cursor
 

@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.view
+package si.pocketalbum.view
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +8,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import si.kordez.pocketalbum.R
-import si.kordez.pocketalbum.core.IAlbum
-import si.kordez.pocketalbum.core.ImageCache
+import si.pocketalbum.R
+import si.pocketalbum.core.IAlbum
+import si.pocketalbum.core.ImageCache
 
 class ImagesRecyclerAdapter(
     album: IAlbum,

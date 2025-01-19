@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum
+package si.pocketalbum
 
 import androidx.core.content.FileProvider
 

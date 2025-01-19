@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.core
+package si.pocketalbum.core
 
 import android.content.res.Resources.NotFoundException
 import android.graphics.Bitmap

@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <provider
-            android:authorities="si.kordez.pocketalbum"
+            android:authorities="si.pocketalbum"
             android:name=".ImageProvider"
             android:exported="false"
             android:grantUriPermissions="true">

@@ -1,13 +1,13 @@
-package si.kordez.pocketalbum.core.sqlite
+package si.pocketalbum.core.sqlite
 
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
-import si.kordez.pocketalbum.core.AlbumInfo
-import si.kordez.pocketalbum.core.IAlbum
-import si.kordez.pocketalbum.core.ImageInfo
-import si.kordez.pocketalbum.core.ImageThumbnail
+import si.pocketalbum.core.AlbumInfo
+import si.pocketalbum.core.IAlbum
+import si.pocketalbum.core.ImageInfo
+import si.pocketalbum.core.ImageThumbnail
 
 class SQLiteAlbum(context: Context) : IAlbum {
     private val dbHelper = DatabaseHelper(context, "album.sqlite")

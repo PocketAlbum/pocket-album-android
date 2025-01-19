@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     style="@style/ImageTools">
 
-    <si.kordez.pocketalbum.view.ImageControl
+    <si.pocketalbum.view.ImageControl
         android:id="@+id/imgThumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

@@ -1,4 +1,4 @@
-package si.kordez.pocketalbum.core.sqlite
+package si.pocketalbum.core.sqlite
 
 data class SQLiteImage(
     val id: Int,
