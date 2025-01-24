@@ -3,11 +3,10 @@ package si.pocketalbum.core.sqlite
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import java.io.File
 
 class DatabaseHelper(context: Context, databaseName: String) : SQLiteOpenHelper(
     context,
-    File(context.filesDir, databaseName).absolutePath, // Use database from filesDir
+    databaseName,
     null,
     DATABASE_VERSION
 ) {

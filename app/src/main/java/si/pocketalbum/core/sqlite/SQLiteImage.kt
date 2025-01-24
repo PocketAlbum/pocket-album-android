@@ -9,7 +9,7 @@ data class SQLiteImage(
     val size: Long,
     val latitude: Double?,
     val longitude: Double?,
-    val checksum: String,
     val thumbnail: ByteArray,
-    val data: ByteArray
+    val data: ByteArray,
+    val crc: UInt
 )

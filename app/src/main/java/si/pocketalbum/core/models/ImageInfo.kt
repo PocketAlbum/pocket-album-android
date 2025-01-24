@@ -1,4 +1,4 @@
-package si.pocketalbum.core
+package si.pocketalbum.core.models
 
 data class ImageInfo (
     val id: String,
@@ -8,5 +8,6 @@ data class ImageInfo (
     val height: Int,
     val size: Long,
     val latitude: Double?,
-    val longitude: Double?
+    val longitude: Double?,
+    val crc: UInt
 )

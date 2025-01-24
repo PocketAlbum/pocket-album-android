@@ -10,6 +10,9 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import si.pocketalbum.core.models.FilterModel
+import si.pocketalbum.core.models.ImageThumbnail
+import si.pocketalbum.core.models.Interval
 import kotlin.math.min
 
 class ImageCache(private val album: IAlbum) {
@@ -38,7 +41,7 @@ class ImageCache(private val album: IAlbum) {
     {
         val first = block * 100
         val last = ((block + 1) * 100) - 1
-        val images = album.getImages(first, last)
+        val images = album.getImages(FilterModel(null, Interval(first.toLong(), last.toLong())))
         val result = HashMap<Int, ImageThumbnail>()
         for (i in 0 .. min(199, images.size - 1))
         {

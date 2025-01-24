@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import si.pocketalbum.R
 import si.pocketalbum.core.IAlbum
 import si.pocketalbum.core.ImageCache
-import si.pocketalbum.core.ImageInfo
+import si.pocketalbum.core.models.ImageInfo
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
