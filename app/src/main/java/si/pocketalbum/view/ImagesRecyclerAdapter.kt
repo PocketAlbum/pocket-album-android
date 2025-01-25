@@ -35,7 +35,7 @@ class ImagesRecyclerAdapter(
         holder.imageView.setImageDrawable(null)
         holder.imageView.resetTransform()
         CoroutineScope(Job() + Dispatchers.IO).launch {
-            val bitmap = cache.getData(position)
+            val bitmap = cache.getData(info.imageCount - position - 1)
             holder.imageView.post {
                 holder.imageView.setImageBitmap(bitmap)
             }

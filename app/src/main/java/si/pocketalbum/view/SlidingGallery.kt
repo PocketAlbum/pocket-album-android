@@ -239,4 +239,8 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         vpgImages.setCurrentItem(position, false)
         vpgImages.isUserInputEnabled = true
     }
+
+    fun currentImage() : Int {
+        return vpgImages.currentItem
+    }
 }
