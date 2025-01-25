@@ -10,6 +10,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import si.pocketalbum.core.ImageCache
 import si.pocketalbum.core.sqlite.SQLiteAlbum
+import si.pocketalbum.view.DateScroller
 import si.pocketalbum.view.ImagesAdapter
 import si.pocketalbum.view.SlidingGallery
 
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
 
         val lstImages = findViewById<GridView>(R.id.lstImages)
         val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
+        val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true)
         {
@@ -38,13 +40,18 @@ class MainActivity : ComponentActivity() {
             val album = SQLiteAlbum(this)
             val cache = ImageCache(album)
 
+            dateScroller.setAlbum(album)
+
             slidingGallery?.loadAlbum(album, cache)
 
             lstImages.adapter = ImagesAdapter(baseContext, album, cache)
             lstImages.setOnItemClickListener { adapterView, view, i, l ->
+                val index = lstImages.adapter.count - i - 1
                 slidingGallery.visibility = VISIBLE
-                slidingGallery.openImage(i)
+                slidingGallery.openImage(index)
             }
+            lstImages.setOnTouchListener(dateScroller)
+            lstImages.setOnScrollChangeListener(dateScroller)
         } catch (e: Exception) {
             Log.e("MainActivity", "Unable to load album", e)
         }

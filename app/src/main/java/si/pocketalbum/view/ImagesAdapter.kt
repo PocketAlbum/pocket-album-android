@@ -37,6 +37,7 @@ class ImagesAdapter(ctx: Context, album: IAlbum, private val cache: ImageCache) 
     }
 
     override fun getView(i: Int, existing: View?, viewGroup: ViewGroup?): View {
+        val index = count - i - 1
         val view = existing ?: inflater.inflate(R.layout.item_image, null)
         val imageView = view.findViewById<ImageView>(R.id.imgThumbnail)
 
@@ -56,7 +57,7 @@ class ImagesAdapter(ctx: Context, album: IAlbum, private val cache: ImageCache) 
 
         imageView.tag = CoroutineScope(Job() + Dispatchers.IO).launch {
             delay(100)
-            val image = cache.getImage(i)
+            val image = cache.getImage(index)
             val thumbnail = image.thumbnail
             val bm = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.size)
             if (isActive) {

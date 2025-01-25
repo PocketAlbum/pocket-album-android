@@ -6,13 +6,20 @@
     <GridView
         android:id="@+id/lstImages"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:numColumns="6"
         android:horizontalSpacing="8dp"
         android:verticalSpacing="8dp"
         android:padding="8dp"
         android:stretchMode="columnWidth"
+        android:scrollbars="none"
         />
+
+    <si.pocketalbum.view.DateScroller
+        android:id="@+id/dateScroller"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"/>
 
     <si.pocketalbum.view.SlidingGallery
         android:id="@+id/slidingGallery"
