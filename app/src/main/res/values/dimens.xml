@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="date_button_width">64dp</dimen>
+    <dimen name="tile_size">80dp</dimen>
 </resources>

@@ -25,6 +25,11 @@ class MainActivity : ComponentActivity() {
         val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
         val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
+        lstImages.post {
+            val size = resources.getDimensionPixelSize(R.dimen.tile_size)
+            lstImages.numColumns = lstImages.width / size
+        }
+
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true)
         {
             override fun handleOnBackPressed() {
