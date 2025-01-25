@@ -17,6 +17,7 @@ import kotlin.math.min
 
 class ImageCache(private val album: IAlbum) {
     private val futures = LruCache<Int, Deferred<HashMap<Int, ImageThumbnail>>>(10)
+    val totalImages = album.getInfo().imageCount
 
     private fun getDeferred(block: Int): Deferred<HashMap<Int, ImageThumbnail>>
     {

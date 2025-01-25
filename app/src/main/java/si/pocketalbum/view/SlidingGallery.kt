@@ -97,7 +97,8 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
             override fun onPageSelected(position: Int) {
                 try {
                     CoroutineScope(Job() + Dispatchers.IO).launch {
-                        val im = cache.getImage(position)
+
+                        val im = cache.getImage(cache.totalImages - position - 1)
                         lltDetails.post {
                             displayImageInfo(im.imageInfo)
                         }

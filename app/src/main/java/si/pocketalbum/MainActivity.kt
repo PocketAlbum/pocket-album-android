@@ -1,15 +1,18 @@
 package si.pocketalbum
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
-import android.util.Log
+import android.os.IBinder
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.GridView
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
-import si.pocketalbum.core.ImageCache
-import si.pocketalbum.core.sqlite.SQLiteAlbum
+import si.pocketalbum.services.AlbumService
 import si.pocketalbum.view.DateScroller
 import si.pocketalbum.view.ImagesAdapter
 import si.pocketalbum.view.SlidingGallery
@@ -19,14 +22,31 @@ class MainActivity : ComponentActivity() {
     private val LAST_POSITION = "LAST_POSITION"
     private val GALLERY_OPEN = "GALLERY_OPEN"
 
+    private lateinit var albumService: AlbumService
+    private var serviceBound: Boolean = false
+    private var savedInstanceState: Bundle? = null
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as AlbumService.LocalBinder
+            albumService = binder.getService()
+            serviceBound = true
+            albumLoaded()
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            serviceBound = false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.savedInstanceState = savedInstanceState
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
         val lstImages = findViewById<GridView>(R.id.lstImages)
         val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
-        val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
         lstImages.post {
             val size = resources.getDimensionPixelSize(R.dimen.tile_size)
@@ -44,35 +64,53 @@ class MainActivity : ComponentActivity() {
             }
         })
 
-        try {
-            val album = SQLiteAlbum(this)
-            val cache = ImageCache(album)
+        val intent = Intent(this, AlbumService::class.java)
+        startService(intent)
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+    }
 
-            dateScroller.setAlbum(album)
+    override fun onDestroy() {
+        super.onDestroy()
 
-            slidingGallery?.loadAlbum(album, cache)
+        unbindService(connection)
+        serviceBound = false
+    }
 
-            lstImages.adapter = ImagesAdapter(baseContext, album, cache)
-            lstImages.setOnItemClickListener { adapterView, view, i, l ->
-                slidingGallery.visibility = VISIBLE
-                slidingGallery.openImage(i)
-            }
-            lstImages.setOnTouchListener(dateScroller)
-            lstImages.setOnScrollChangeListener(dateScroller)
+    fun albumLoaded() {
+        val album = albumService.getAlbum()
+        val cache = albumService.getCache()
 
-            if (savedInstanceState?.containsKey(LAST_POSITION) == true) {
-                val position = savedInstanceState.getInt(LAST_POSITION)
-                lstImages.post{
-                    lstImages.setSelection(position)
-                    slidingGallery.openImage(position)
-                    if (savedInstanceState.getBoolean(GALLERY_OPEN, false))
-                    {
-                        slidingGallery.visibility = VISIBLE
-                    }
+        val lstImages = findViewById<GridView>(R.id.lstImages)
+        val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
+        val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
+
+        dateScroller.setAlbum(album)
+
+        slidingGallery?.loadAlbum(album, cache)
+
+        lstImages.adapter = ImagesAdapter(baseContext, album, cache)
+        lstImages.setOnItemClickListener { adapterView, view, i, l ->
+            slidingGallery.visibility = VISIBLE
+            slidingGallery.openImage(i)
+        }
+        lstImages.setOnTouchListener(dateScroller)
+        lstImages.setOnScrollChangeListener(dateScroller)
+
+        restoreSavedState(lstImages, slidingGallery)
+    }
+
+    private fun restoreSavedState(lstImages: GridView, slidingGallery: SlidingGallery) {
+        val state = savedInstanceState
+        if (state?.containsKey(LAST_POSITION) == true) {
+            val position = state.getInt(LAST_POSITION)
+            lstImages.post{
+                lstImages.setSelection(position)
+                slidingGallery.openImage(position)
+                if (state.getBoolean(GALLERY_OPEN, false))
+                {
+                    slidingGallery.visibility = VISIBLE
                 }
             }
-        } catch (e: Exception) {
-            Log.e("MainActivity", "Unable to load album", e)
         }
     }
 
