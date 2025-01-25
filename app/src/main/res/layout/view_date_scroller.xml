@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frmRoot"
     android:orientation="vertical"
-    android:layout_width="64dp"
-    android:layout_height="match_parent">
+    android:layout_width="@dimen/date_button_width"
+    android:layout_height="match_parent"
+    android:layout_marginRight="2dp"
+    tools:ignore="RtlHardcoded">
     <TextView
         android:id="@+id/lblDate"
-        android:layout_width="64dp"
+        android:layout_width="@dimen/date_button_width"
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:background="@drawable/date_scroller_button"

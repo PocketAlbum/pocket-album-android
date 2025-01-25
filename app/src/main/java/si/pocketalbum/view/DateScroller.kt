@@ -6,10 +6,11 @@ import android.view.MotionEvent
 import android.view.MotionEvent.ACTION_DOWN
 import android.view.MotionEvent.ACTION_UP
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.Transformation
 import android.widget.FrameLayout
 import android.widget.GridView
 import android.widget.LinearLayout
-import android.widget.LinearLayout.VERTICAL
 import android.widget.TextView
 import si.pocketalbum.R
 import si.pocketalbum.core.IAlbum
@@ -24,6 +25,11 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
     private var offsets : Map<Int, Int>? = null
     private var touch = false
     private var timeout = false
+    private var mode = InteractionModes.HIDDEN
+
+    enum class InteractionModes {
+        HIDDEN, VISIBLE, SCROLLING
+    }
 
     init {
         inflate(context, R.layout.view_date_scroller, this)
@@ -50,14 +56,19 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
             layout.topMargin = (position * availableHeight).toInt()
             lblDate.layoutParams = layout
 
-            if (visibility != VISIBLE) {
-                visibility = VISIBLE
+            if (mode == InteractionModes.HIDDEN)
+            {
+                mode = InteractionModes.VISIBLE
+                animateLeftMargin(resources.getDimensionPixelSize(R.dimen.date_button_width), 0)
             }
-
-            handler.removeCallbacks(hideScrollbar)
-            timeout = false
-            handler.postDelayed(hideScrollbar, 500)
+            hideWithTimeout()
         }
+    }
+
+    private fun hideWithTimeout() {
+        handler.removeCallbacks(hideScrollbar)
+        timeout = false
+        handler.postDelayed(hideScrollbar, 500)
     }
 
     private val hideScrollbar = Runnable {
@@ -65,8 +76,22 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
             timeout = true
         }
         else {
-            visibility = INVISIBLE
+            animateLeftMargin(0, resources.getDimensionPixelSize(R.dimen.date_button_width))
+            mode = InteractionModes.HIDDEN
         }
+    }
+
+    private fun animateLeftMargin(start : Int, end : Int) {
+        lblDate.clearAnimation()
+        val animation = object : Animation() {
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+                val params = lblDate.layoutParams as LayoutParams
+                params.leftMargin = start + ((end - start) * interpolatedTime).toInt()
+                lblDate.layoutParams = params
+            }
+        }
+        animation.duration = 200 // in ms
+        lblDate.startAnimation(animation)
     }
 
     private fun getYearFoIndex(index : Int) : Int
@@ -103,8 +128,7 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         {
             touch = false
             if (timeout) {
-                timeout = false
-                handler.postDelayed(hideScrollbar, 500)
+                hideWithTimeout()
             }
         }
         return false
