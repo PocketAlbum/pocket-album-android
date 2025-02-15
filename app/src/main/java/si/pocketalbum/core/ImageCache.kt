@@ -1,6 +1,5 @@
 package si.pocketalbum.core
 
-import android.content.res.Resources.NotFoundException
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -15,9 +14,10 @@ import si.pocketalbum.core.models.ImageThumbnail
 import si.pocketalbum.core.models.Interval
 import kotlin.math.min
 
-class ImageCache(private val album: IAlbum) {
+class ImageCache(private val album: IAlbum, val filter: FilterModel) {
+    val info = album.getInfo(filter)
+
     private val futures = LruCache<Int, Deferred<HashMap<Int, ImageThumbnail>>>(10)
-    val totalImages = album.getInfo().imageCount
 
     private fun getDeferred(block: Int): Deferred<HashMap<Int, ImageThumbnail>>
     {
@@ -40,22 +40,28 @@ class ImageCache(private val album: IAlbum) {
 
     private fun loadImages(block: Int): HashMap<Int, ImageThumbnail>
     {
-        val first = block * 100
-        val last = ((block + 1) * 100) - 1
-        val images = album.getImages(FilterModel(null, Interval(first.toLong(), last.toLong())))
-        val result = HashMap<Int, ImageThumbnail>()
-        for (i in 0 .. min(199, images.size - 1))
-        {
-            result[i + first] = images[i]
+        try {
+            val first = block * 100
+            val last = ((block + 1) * 100) - 1
+            val images = album.getImages(filter, Interval(first.toLong(), last.toLong()))
+            val result = HashMap<Int, ImageThumbnail>()
+            for (i in 0 .. min(199, images.size - 1))
+            {
+                result[i + first] = images[i]
+            }
+            return result
         }
-        return result
+        catch (e: Exception) {
+            Log.e("APP", "Failed to load images", e)
+            throw e
+        }
     }
 
     suspend fun getImage(number: Int): ImageThumbnail
     {
         val block = number / 100
         val image = getDeferred(block).await()[number]
-            ?: throw NotFoundException("Image number $number not found")
+            ?: throw NoSuchElementException("Image number $number not found")
         return image
     }
 

@@ -13,7 +13,7 @@ import android.widget.GridView
 import android.widget.LinearLayout
 import android.widget.TextView
 import si.pocketalbum.R
-import si.pocketalbum.core.IAlbum
+import si.pocketalbum.core.ImageCache
 import kotlin.collections.set
 
 class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs),
@@ -107,12 +107,12 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         return 0
     }
 
-    fun setAlbum(album: IAlbum)
+    fun setAlbum(album: ImageCache)
     {
         val newOffsets = mutableMapOf<Int, Int>()
         var cumulativeCount = 0
 
-        for (year in album.getYearIndex().sortedBy { it.year }) {
+        for (year in album.info.years.sortedBy { it.year }) {
             cumulativeCount += year.count
             newOffsets[cumulativeCount] = year.year
         }

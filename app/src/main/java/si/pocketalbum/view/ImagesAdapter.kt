@@ -2,6 +2,7 @@ package si.pocketalbum.view
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,12 +17,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import si.pocketalbum.R
-import si.pocketalbum.core.IAlbum
 import si.pocketalbum.core.ImageCache
 
-class ImagesAdapter(ctx: Context, album: IAlbum, private val cache: ImageCache) : BaseAdapter() {
+class ImagesAdapter(ctx: Context, private val cache: ImageCache) : BaseAdapter() {
 
-    private val info = album.getInfo()
+    private val info = cache.info
     private val inflater = LayoutInflater.from(ctx)
 
     override fun getCount(): Int {
@@ -57,15 +57,22 @@ class ImagesAdapter(ctx: Context, album: IAlbum, private val cache: ImageCache) 
 
         imageView.tag = CoroutineScope(Job() + Dispatchers.IO).launch {
             delay(100)
-            val image = cache.getImage(index)
-            val thumbnail = image.thumbnail
-            val bm = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.size)
-            if (isActive) {
-                imageView.post {
-                    imageView.setImageBitmap(bm)
+            try {
+                val image = cache.getImage(index)
+                val thumbnail = image.thumbnail
+                val bm = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.size)
+
+                if (isActive) {
+                    imageView.post {
+                        imageView.setImageBitmap(bm)
+                    }
                 }
             }
+            catch (e: Exception) {
+                Log.e("APP", "Failed to load image", e)
+            }
         }
+
         return view
     }
 }

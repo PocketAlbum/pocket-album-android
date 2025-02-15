@@ -9,17 +9,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import si.pocketalbum.R
-import si.pocketalbum.core.IAlbum
 import si.pocketalbum.core.ImageCache
 
 class ImagesRecyclerAdapter(
-    album: IAlbum,
     private val cache: ImageCache,
     private val onImageActions: ImageControl.OnImageActions
 )
     : RecyclerView.Adapter<ImagesRecyclerAdapter.ImageViewHolder>() {
 
-    private val info = album.getInfo()
+    private val info = cache.info
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
         val inflater = LayoutInflater.from(parent.context)

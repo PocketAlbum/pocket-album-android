@@ -5,5 +5,5 @@ data class AlbumInfo(
     val dateCount: Int,
     val thumbnailsSize: Long,
     val imagesSize: Long,
-    val years: List<Int>
+    val years: List<YearIndex>
 )

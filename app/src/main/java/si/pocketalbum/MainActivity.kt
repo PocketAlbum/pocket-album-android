@@ -84,11 +84,11 @@ class MainActivity : ComponentActivity() {
         val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
         val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
-        dateScroller.setAlbum(album)
+        dateScroller.setAlbum(cache)
 
         slidingGallery?.loadAlbum(album, cache)
 
-        lstImages.adapter = ImagesAdapter(baseContext, album, cache)
+        lstImages.adapter = ImagesAdapter(baseContext, cache)
         lstImages.setOnItemClickListener { adapterView, view, i, l ->
             slidingGallery.visibility = VISIBLE
             slidingGallery.openImage(i)

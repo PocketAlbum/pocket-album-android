@@ -10,6 +10,7 @@ import si.pocketalbum.core.IAlbum
 import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.models.ImageInfo
 import si.pocketalbum.core.models.ImageThumbnail
+import si.pocketalbum.core.models.Interval
 import si.pocketalbum.core.models.YearIndex
 import java.io.Closeable
 import java.io.File
@@ -19,21 +20,30 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     private val dbHelper = DatabaseHelper(context, dbFile.absolutePath)
     private val db = dbHelper.writableDatabase
 
-    override fun getInfo(): AlbumInfo {
-        val cursor = db.rawQuery("SELECT DISTINCT substr(Created, 1, 4) FROM Image", null)
+    private val yearQuery = "CAST(substr(Created, 1, 4) AS SIGNED) AS y"
 
-        val years = mutableListOf<Int>()
+    override fun getInfo(filter: FilterModel): AlbumInfo {
+        val where = if (filter.year != null) "WHERE " + getWhere(filter) else ""
+        val cursor = db.rawQuery("SELECT $yearQuery, COUNT(*) FROM Image $where GROUP BY y;",
+            null)
+
+        val years = mutableListOf<YearIndex>()
         cursor.use {
             while (cursor.moveToNext()) {
-                years.add(cursor.getInt(0))
+                val year = cursor.getInt(0)
+                val count = cursor.getInt(1)
+                years.add(YearIndex(year, count, (0).toUInt(), (0).toULong()))
             }
         }
 
         return try {
-            val imageCount = queryNumber(db, "SELECT COUNT(*) FROM Image").toInt()
-            val dateCount = queryNumber(db, "SELECT COUNT(DISTINCT DATE(Created)) FROM Image").toInt()
-            val thumbnailsSize = queryNumber(db, "SELECT SUM(LENGTH(Thumbnail)) FROM Image")
-            val imagesSize = queryNumber(db, "SELECT SUM(LENGTH(Data)) FROM Image")
+            val imageCount = years.sumOf { it.count }
+            val dateCount = queryNumber(db,
+                "SELECT $yearQuery, COUNT(DISTINCT DATE(Created)) FROM Image $where").toInt()
+            val thumbnailsSize = queryNumber(db,
+                "SELECT $yearQuery, SUM(LENGTH(Thumbnail)) FROM Image $where")
+            val imagesSize = queryNumber(db,
+                "SELECT $yearQuery, SUM(LENGTH(Data)) FROM Image $where")
             AlbumInfo(imageCount, dateCount, thumbnailsSize, imagesSize, years)
         } catch (e: SQLiteException) {
             throw RuntimeException("Error fetching album info", e)
@@ -43,38 +53,30 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     private fun getWhere(filter: FilterModel): String? {
         if (filter.year != null) {
             if (filter.year.singleValue) {
-                return """"Created LIKE '${filter.year.to}-%' """
+                return """y = ${filter.year.to} """
             }
             else
             {
-                return """"substr(Created, 1, 4) >= ${filter.year.from}
-                    | AND substr(Created, 1, 4) <= ${filter.year.to} """.trimMargin()
+                return """y >= ${filter.year.from}
+                    | AND y <= ${filter.year.to} """.trimMargin()
             }
         }
         return null
     }
 
-    private fun getLimit(filter: FilterModel): String? {
-        if (filter.index != null) {
-            val count = filter.index.to - filter.index.from + 1;
-            return """${filter.index.from}, $count""";
-        }
-        return null
+    private fun getLimit(paging: Interval): String {
+        val count = paging.to - paging.from + 1;
+        return """${paging.from}, $count""";
     }
 
-    override fun getImages(filter: FilterModel): List<ImageThumbnail> {
-        if (!filter.valid) {
-            throw IllegalArgumentException(
-                "At least one property of filter model must be filled")
-        }
-
+    override fun getImages(filter: FilterModel, paging: Interval): List<ImageThumbnail> {
         val cursor = db.query("Image",
-            arrayOf("Id", "Filename", "Created", "Width", "Height",
-                "Size", "Crc", "Latitude", "Longitude", "Thumbnail"),
+            arrayOf("Id", "Filename", "Created", "Width", "Height", "Size", "Crc",
+                "Latitude", "Longitude", "Thumbnail", yearQuery),
             getWhere(filter), null,
             null, null,
             "Created ASC",
-            getLimit(filter))
+            getLimit(paging))
 
         val thumbnails = mutableListOf<ImageThumbnail>()
         cursor.use {

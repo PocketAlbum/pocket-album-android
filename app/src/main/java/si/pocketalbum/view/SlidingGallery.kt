@@ -88,7 +88,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
     fun loadAlbum(album: IAlbum, cache: ImageCache) {
         this.album = album
 
-        vpgImages.adapter = ImagesRecyclerAdapter(album, cache) {
+        vpgImages.adapter = ImagesRecyclerAdapter(cache) {
             val v = if (lltDetails.visibility == VISIBLE) INVISIBLE else VISIBLE
             lltDetails.visibility = v
             lltActions.visibility = v
@@ -98,7 +98,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
                 try {
                     CoroutineScope(Job() + Dispatchers.IO).launch {
 
-                        val im = cache.getImage(cache.totalImages - position - 1)
+                        val im = cache.getImage(cache.info.imageCount - position - 1)
                         lltDetails.post {
                             displayImageInfo(im.imageInfo)
                         }
