@@ -8,7 +8,6 @@ import android.util.Log
 import si.pocketalbum.core.IAlbum
 import si.pocketalbum.core.ImageCache
 import si.pocketalbum.core.models.FilterModel
-import si.pocketalbum.core.models.Interval
 import si.pocketalbum.core.sqlite.SQLiteAlbum
 
 class AlbumService : Service() {
@@ -29,7 +28,7 @@ class AlbumService : Service() {
         super.onCreate()
         Log.i("AlbumService", "Creating service")
         album = SQLiteAlbum(this)
-        cache = ImageCache(album, FilterModel(null))
+        cache = ImageCache(album, FilterModel(null, null))
     }
 
     override fun onDestroy() {

@@ -21,10 +21,12 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     private val db = dbHelper.writableDatabase
 
     private val yearQuery = "CAST(substr(Created, 1, 4) AS SIGNED) AS y"
+    private val hourQuery = "CAST(substr(Created, 12, 2) AS SIGNED) AS h"
 
     override fun getInfo(filter: FilterModel): AlbumInfo {
-        val where = if (filter.year != null) "WHERE " + getWhere(filter) else ""
-        val cursor = db.rawQuery("SELECT $yearQuery, COUNT(*) FROM Image $where GROUP BY y;",
+        val where = " WHERE " + getWhere(filter)
+        val cursor = db.rawQuery(
+            "SELECT $yearQuery, COUNT(*), $hourQuery FROM Image $where GROUP BY y;",
             null)
 
         val years = mutableListOf<YearIndex>()
@@ -39,29 +41,40 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
         return try {
             val imageCount = years.sumOf { it.count }
             val dateCount = queryNumber(db,
-                "SELECT $yearQuery, COUNT(DISTINCT DATE(Created)) FROM Image $where").toInt()
+                "SELECT COUNT(DISTINCT DATE(Created)), $yearQuery, $hourQuery FROM Image $where").toInt()
             val thumbnailsSize = queryNumber(db,
-                "SELECT $yearQuery, SUM(LENGTH(Thumbnail)) FROM Image $where")
+                "SELECT SUM(LENGTH(Thumbnail)), $yearQuery, $hourQuery FROM Image $where")
             val imagesSize = queryNumber(db,
-                "SELECT $yearQuery, SUM(LENGTH(Data)) FROM Image $where")
+                "SELECT SUM(LENGTH(Data)), $yearQuery, $hourQuery FROM Image $where")
             AlbumInfo(imageCount, dateCount, thumbnailsSize, imagesSize, years)
         } catch (e: SQLiteException) {
             throw RuntimeException("Error fetching album info", e)
         }
     }
 
-    private fun getWhere(filter: FilterModel): String? {
+    private fun getWhere(filter: FilterModel): String {
+        if (!filter.hasAny) {
+            return "TRUE"
+        }
+        val conditions = mutableListOf<String>()
         if (filter.year != null) {
             if (filter.year.singleValue) {
-                return """y = ${filter.year.to} """
+                conditions.add("y = ${filter.year.to}")
             }
             else
             {
-                return """y >= ${filter.year.from}
-                    | AND y <= ${filter.year.to} """.trimMargin()
+                conditions.add("y >= ${filter.year.from} AND y <= ${filter.year.to}")
             }
         }
-        return null
+        if (filter.timeOfDay != null) {
+            conditions.add(when(filter.timeOfDay) {
+                FilterModel.TimesOfDay.Morning -> "h >= 6 AND h < 12"
+                FilterModel.TimesOfDay.Afternoon -> "h >= 12 AND h < 18"
+                FilterModel.TimesOfDay.Evening -> "h >= 18"
+                FilterModel.TimesOfDay.Night -> "h < 6"
+            })
+        }
+        return conditions.joinToString(" AND ")
     }
 
     private fun getLimit(paging: Interval): String {
@@ -72,7 +85,7 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     override fun getImages(filter: FilterModel, paging: Interval): List<ImageThumbnail> {
         val cursor = db.query("Image",
             arrayOf("Id", "Filename", "Created", "Width", "Height", "Size", "Crc",
-                "Latitude", "Longitude", "Thumbnail", yearQuery),
+                "Latitude", "Longitude", "Thumbnail", yearQuery, hourQuery),
             getWhere(filter), null,
             null, null,
             "Created ASC",

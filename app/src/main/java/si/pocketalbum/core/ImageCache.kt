@@ -14,7 +14,7 @@ import si.pocketalbum.core.models.ImageThumbnail
 import si.pocketalbum.core.models.Interval
 import kotlin.math.min
 
-class ImageCache(private val album: IAlbum, val filter: FilterModel) {
+class ImageCache(private val album: IAlbum, private val filter: FilterModel) {
     val info = album.getInfo(filter)
 
     private val futures = LruCache<Int, Deferred<HashMap<Int, ImageThumbnail>>>(10)
