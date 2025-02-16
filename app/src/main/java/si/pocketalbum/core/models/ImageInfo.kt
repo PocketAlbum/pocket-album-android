@@ -3,6 +3,7 @@ package si.pocketalbum.core.models
 data class ImageInfo (
     val id: String,
     val filename: String,
+    val contentType: String,
     val created: String,
     val width: Int,
     val height: Int,

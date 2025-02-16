@@ -120,6 +120,7 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
         db.insert("image", null, ContentValues().apply {
             put("id", image.id)
             put("filename", image.filename)
+            put("contentType", image.contentType)
             put("created", image.created)
             put("width", image.width)
             put("height", image.height)
@@ -159,6 +160,7 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
         return ImageInfo(
             id = cursor.getString(cursor.getColumnIndexOrThrow("id")),
             filename = cursor.getString(cursor.getColumnIndexOrThrow("filename")),
+            contentType = cursor.getString(cursor.getColumnIndexOrThrow("contentType")),
             created = cursor.getString(cursor.getColumnIndexOrThrow("created")),
             width = cursor.getInt(cursor.getColumnIndexOrThrow("width")),
             height = cursor.getInt(cursor.getColumnIndexOrThrow("height")),
