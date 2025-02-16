@@ -20,13 +20,13 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     private val dbHelper = DatabaseHelper(context, dbFile.absolutePath)
     private val db = dbHelper.writableDatabase
 
-    private val yearQuery = "CAST(substr(Created, 1, 4) AS SIGNED) AS y"
-    private val hourQuery = "CAST(substr(Created, 12, 2) AS SIGNED) AS h"
+    private val yearQuery = "CAST(substr(created, 1, 4) AS SIGNED) AS y"
+    private val hourQuery = "CAST(substr(created, 12, 2) AS SIGNED) AS h"
 
     override fun getInfo(filter: FilterModel): AlbumInfo {
         val where = " WHERE " + getWhere(filter)
         val cursor = db.rawQuery(
-            "SELECT $yearQuery, COUNT(*), $hourQuery FROM Image $where GROUP BY y;",
+            "SELECT $yearQuery, COUNT(*), $hourQuery FROM image $where GROUP BY y;",
             null)
 
         val years = mutableListOf<YearIndex>()
@@ -41,11 +41,11 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
         return try {
             val imageCount = years.sumOf { it.count }
             val dateCount = queryNumber(db,
-                "SELECT COUNT(DISTINCT DATE(Created)), $yearQuery, $hourQuery FROM Image $where").toInt()
+                "SELECT COUNT(DISTINCT DATE(created)), $yearQuery, $hourQuery FROM image $where").toInt()
             val thumbnailsSize = queryNumber(db,
-                "SELECT SUM(LENGTH(Thumbnail)), $yearQuery, $hourQuery FROM Image $where")
+                "SELECT SUM(LENGTH(thumbnail)), $yearQuery, $hourQuery FROM image $where")
             val imagesSize = queryNumber(db,
-                "SELECT SUM(LENGTH(Data)), $yearQuery, $hourQuery FROM Image $where")
+                "SELECT SUM(LENGTH(data)), $yearQuery, $hourQuery FROM image $where")
             AlbumInfo(imageCount, dateCount, thumbnailsSize, imagesSize, years)
         } catch (e: SQLiteException) {
             throw RuntimeException("Error fetching album info", e)
@@ -83,19 +83,19 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     }
 
     override fun getImages(filter: FilterModel, paging: Interval): List<ImageThumbnail> {
-        val cursor = db.query("Image",
-            arrayOf("Id", "Filename", "Created", "Width", "Height", "Size", "Crc",
-                "Latitude", "Longitude", "Thumbnail", yearQuery, hourQuery),
+        val cursor = db.query("image",
+            arrayOf("id", "filename", "created", "width", "height", "size", "crc",
+                "latitude", "longitude", "thumbnail", yearQuery, hourQuery),
             getWhere(filter), null,
             null, null,
-            "Created ASC",
+            "created ASC",
             getLimit(paging))
 
         val thumbnails = mutableListOf<ImageThumbnail>()
         cursor.use {
             while (cursor.moveToNext()) {
                 val image = convertImage(cursor)
-                val thumbnail = cursor.getBlob(cursor.getColumnIndexOrThrow("Thumbnail"))
+                val thumbnail = cursor.getBlob(cursor.getColumnIndexOrThrow("thumbnail"))
                 thumbnails.add(ImageThumbnail(image, thumbnail))
             }
         }
@@ -103,13 +103,13 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     }
 
     override fun getData(id: String): ByteArray {
-        val cursor = db.query("Image", arrayOf("Data"),
+        val cursor = db.query("image", arrayOf("data"),
             "Id = ?", arrayOf(id),
             null, null, null, null)
 
         cursor.use {
             if (cursor.moveToFirst()) {
-                return cursor.getBlob(cursor.getColumnIndexOrThrow("Data"))
+                return cursor.getBlob(cursor.getColumnIndexOrThrow("data"))
             } else {
                 throw IllegalArgumentException("Data for image id $id not found")
             }
@@ -117,24 +117,24 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     }
 
     override fun insert(image: ImageInfo, thumbnail: ByteArray, data: ByteArray) {
-        db.insert("Image", null, ContentValues().apply {
-            put("Id", image.id)
-            put("Filename", image.filename)
-            put("Created", image.created)
-            put("Width", image.width)
-            put("Height", image.height)
-            put("Size", image.size)
-            put("Latitude", image.latitude)
-            put("Longitude", image.longitude)
-            put("Crc", image.crc.toInt())
-            put("Thumbnail", thumbnail)
-            put("Data", data)
+        db.insert("image", null, ContentValues().apply {
+            put("id", image.id)
+            put("filename", image.filename)
+            put("created", image.created)
+            put("width", image.width)
+            put("height", image.height)
+            put("size", image.size)
+            put("latitude", image.latitude)
+            put("longitude", image.longitude)
+            put("crc", image.crc.toInt())
+            put("thumbnail", thumbnail)
+            put("data", data)
         })
     }
 
     override fun imageExists(id: String): Boolean {
         val query = """
-            SELECT EXISTS(SELECT 1 FROM Image WHERE Id = ?)
+            SELECT EXISTS(SELECT 1 FROM image WHERE id = ?)
         """
         val cursor = db.rawQuery(query, arrayOf(id))
         cursor.use {
@@ -157,39 +157,39 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
 
     private fun convertImage(cursor: Cursor): ImageInfo {
         return ImageInfo(
-            id = cursor.getString(cursor.getColumnIndexOrThrow("Id")),
-            filename = cursor.getString(cursor.getColumnIndexOrThrow("Filename")),
-            created = cursor.getString(cursor.getColumnIndexOrThrow("Created")),
-            width = cursor.getInt(cursor.getColumnIndexOrThrow("Width")),
-            height = cursor.getInt(cursor.getColumnIndexOrThrow("Height")),
-            size = cursor.getLong(cursor.getColumnIndexOrThrow("Size")),
-            latitude = cursor.getDoubleOrNull("Latitude"),
-            longitude = cursor.getDoubleOrNull("Longitude"),
-            crc = cursor.getInt(cursor.getColumnIndexOrThrow("Crc")).toUInt()
+            id = cursor.getString(cursor.getColumnIndexOrThrow("id")),
+            filename = cursor.getString(cursor.getColumnIndexOrThrow("filename")),
+            created = cursor.getString(cursor.getColumnIndexOrThrow("created")),
+            width = cursor.getInt(cursor.getColumnIndexOrThrow("width")),
+            height = cursor.getInt(cursor.getColumnIndexOrThrow("height")),
+            size = cursor.getLong(cursor.getColumnIndexOrThrow("size")),
+            latitude = cursor.getDoubleOrNull("latitude"),
+            longitude = cursor.getDoubleOrNull("longitude"),
+            crc = cursor.getInt(cursor.getColumnIndexOrThrow("crc")).toUInt()
         )
     }
 
     override fun storeYearIndex(yearIndex: YearIndex) {
-        db.insert("YearIndex", null, ContentValues().apply {
-            put("Year", yearIndex.year)
-            put("Count", yearIndex.count)
-            put("Crc", yearIndex.crc.toInt())
-            put("Size", yearIndex.size.toLong())
+        db.insert("index", null, ContentValues().apply {
+            put("year", yearIndex.year)
+            put("count", yearIndex.count)
+            put("crc", yearIndex.crc.toInt())
+            put("size", yearIndex.size.toLong())
         })
     }
 
     override fun getYearIndex(): List<YearIndex> {
-        val cursor = db.query("YearIndex", arrayOf("Year, Count, Crc, Size"),
-            null, null, null, null, "Year")
+        val cursor = db.query("index", arrayOf("year", "count", "crc", "size"),
+            null, null, null, null, "year")
 
         val index = mutableListOf<YearIndex>()
         cursor.use {
             while (cursor.moveToNext()) {
                 index.add(YearIndex(
-                    cursor.getInt(cursor.getColumnIndexOrThrow("Year")),
-                    cursor.getInt(cursor.getColumnIndexOrThrow("Count")),
-                    cursor.getInt(cursor.getColumnIndexOrThrow("Crc")).toUInt(),
-                    cursor.getLong(cursor.getColumnIndexOrThrow("Size")).toULong(),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("year")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("count")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("crc")).toUInt(),
+                    cursor.getLong(cursor.getColumnIndexOrThrow("size")).toULong(),
                 ))
             }
         }
@@ -197,7 +197,7 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     }
 
     override fun removeYearIndex(year: Int) {
-        db.delete("YearIndex", "Year = ?", arrayOf(year.toString()))
+        db.delete("index", "year = ?", arrayOf(year.toString()))
     }
 
     override fun close() {
