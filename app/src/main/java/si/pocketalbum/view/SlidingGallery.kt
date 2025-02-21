@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Window
@@ -29,7 +28,6 @@ import si.pocketalbum.core.ImageCache
 import si.pocketalbum.core.models.ImageInfo
 import java.io.File
 import java.io.FileOutputStream
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -195,24 +193,11 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         {
             iso = iso.substring(0, iso.length - 4)
         }
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // For Android 8.0+ (API level 26+)
-            val localDateTime = LocalDateTime.parse(iso, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-            val systemFormatter = DateTimeFormatter
-                .ofLocalizedDateTime(java.time.format.FormatStyle.MEDIUM)
-                .withLocale(Locale.getDefault())
-            localDateTime.format(systemFormatter)
-        } else {
-            // For older Android versions
-            val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-            val date = isoFormat.parse(isoDateTime) ?: return ""
-            val systemFormat = SimpleDateFormat.getDateTimeInstance(
-                SimpleDateFormat.MEDIUM,
-                SimpleDateFormat.MEDIUM,
-                Locale.getDefault()
-            )
-            systemFormat.format(date)
-        }
+        val localDateTime = LocalDateTime.parse(iso, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val systemFormatter = DateTimeFormatter
+            .ofLocalizedDateTime(java.time.format.FormatStyle.MEDIUM)
+            .withLocale(Locale.getDefault())
+        return localDateTime.format(systemFormatter)
     }
 
     private fun formatCoordinates(latitude: Double?, longitude: Double?): String? {
