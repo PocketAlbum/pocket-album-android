@@ -19,8 +19,10 @@ import si.pocketalbum.view.SlidingGallery
 
 class MainActivity : ComponentActivity() {
 
-    private val LAST_POSITION = "LAST_POSITION"
-    private val GALLERY_OPEN = "GALLERY_OPEN"
+    companion object {
+        const val LAST_POSITION = "LAST_POSITION"
+        const val GALLERY_OPEN = "GALLERY_OPEN"
+    }
 
     private lateinit var albumService: AlbumService
     private var serviceBound: Boolean = false
@@ -31,7 +33,14 @@ class MainActivity : ComponentActivity() {
             val binder = service as AlbumService.LocalBinder
             albumService = binder.getService()
             serviceBound = true
-            albumLoaded()
+
+            if (!albumService.isAlbumLoaded())
+            {
+                startActivity(Intent(baseContext, ImportActivity::class.java))
+            }
+            else {
+                albumLoaded()
+            }
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {

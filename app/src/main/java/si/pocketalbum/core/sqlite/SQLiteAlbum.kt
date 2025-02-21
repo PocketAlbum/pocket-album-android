@@ -5,19 +5,25 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
-import si.pocketalbum.core.models.AlbumInfo
+import android.net.Uri
+import si.pocketalbum.R
+import si.pocketalbum.UserException
 import si.pocketalbum.core.IAlbum
+import si.pocketalbum.core.models.AlbumInfo
 import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.models.ImageInfo
 import si.pocketalbum.core.models.ImageThumbnail
 import si.pocketalbum.core.models.Interval
 import si.pocketalbum.core.models.YearIndex
 import java.io.Closeable
+import java.io.DataInputStream
+import java.io.EOFException
 import java.io.File
+import java.io.IOException
+import java.io.UnsupportedEncodingException
 
-class SQLiteAlbum(context: Context) : IAlbum, Closeable {
-    private val dbFile = File(context.filesDir, "album.sqlite")
-    private val dbHelper = DatabaseHelper(context, dbFile.absolutePath)
+class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
+    private val dbHelper = DatabaseHelper(context, file.absolutePath)
     private val db = dbHelper.writableDatabase
 
     private val yearQuery = "CAST(substr(created, 1, 4) AS SIGNED) AS y"
@@ -204,5 +210,34 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
 
     override fun close() {
         db.close()
+    }
+
+    companion object {
+        private const val APPLICATION_ID = 0x6C416F50
+
+        fun verifyOrThrow(context: Context, uri: Uri): Boolean {
+            try {
+                context.contentResolver.openInputStream(uri)?.use {
+                    it.skip(68) // application id is located at offset 68
+                    DataInputStream(it).use {
+                        val applicationId = it.readInt()
+                        if (applicationId == APPLICATION_ID) {
+                            return true
+                        }
+                        throw UnsupportedEncodingException("Application ID $applicationId unknown")
+                    }
+                }
+                throw IOException("Unable to open file from uri $uri")
+            }
+            catch (e: UnsupportedEncodingException) {
+                throw UserException(R.string.invalid_database_format, e)
+            }
+            catch (e: EOFException) {
+                throw UserException(R.string.error_file_empty, e)
+            }
+            catch (e: IOException) {
+                throw UserException(R.string.open_file_failed, e)
+            }
+        }
     }
 }

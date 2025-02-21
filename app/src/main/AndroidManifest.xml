@@ -22,6 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ImportActivity"
+            android:theme="@style/Theme.PocketAlbum"/>
         <provider
             android:authorities="si.pocketalbum"
             android:name=".ImageProvider"

@@ -9,12 +9,14 @@ import si.pocketalbum.core.IAlbum
 import si.pocketalbum.core.ImageCache
 import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.sqlite.SQLiteAlbum
+import java.io.File
+import java.io.FileNotFoundException
 
 class AlbumService : Service() {
     private val binder = LocalBinder()
 
-    private lateinit var album: SQLiteAlbum
-    private lateinit var cache: ImageCache
+    private var album: SQLiteAlbum? = null
+    private var cache: ImageCache? = null
 
     inner class LocalBinder : Binder() {
         fun getService(): AlbumService = this@AlbumService
@@ -27,20 +29,39 @@ class AlbumService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i("AlbumService", "Creating service")
-        album = SQLiteAlbum(this)
-        cache = ImageCache(album, FilterModel(null, null))
+        try {
+            reloadAlbumFile()
+        }
+        catch (e: Exception) {
+            Log.e("AlbumService", "Failed to load album", e)
+        }
+    }
+
+    fun reloadAlbumFile() {
+        val dbFile = File(filesDir, "album.sqlite")
+        if (dbFile.exists()) {
+            val openedAlbum = SQLiteAlbum(this, dbFile)
+            val newCache = ImageCache(openedAlbum, FilterModel(null, null))
+            album = openedAlbum
+            cache = newCache
+        }
+        else throw FileNotFoundException("File album.sqlite not found")
     }
 
     override fun onDestroy() {
         Log.i("AlbumService", "Destroying service")
-        album.close()
+        album?.close()
     }
 
     fun getAlbum(): IAlbum {
-        return album
+        return album ?: throw IllegalStateException("No album is loaded")
     }
 
     fun getCache(): ImageCache {
-        return cache
+        return cache ?: throw IllegalStateException("No album is loaded")
+    }
+
+    fun isAlbumLoaded(): Boolean {
+        return album != null && cache != null
     }
 }
