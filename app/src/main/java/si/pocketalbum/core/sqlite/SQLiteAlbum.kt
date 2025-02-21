@@ -84,7 +84,7 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
 
     override fun getImages(filter: FilterModel, paging: Interval): List<ImageThumbnail> {
         val cursor = db.query("image",
-            arrayOf("id", "filename", "created", "width", "height", "size", "crc",
+            arrayOf("id", "fileName", "contentType", "created", "width", "height", "size", "crc",
                 "latitude", "longitude", "thumbnail", yearQuery, hourQuery),
             getWhere(filter), null,
             null, null,
@@ -119,7 +119,7 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     override fun insert(image: ImageInfo, thumbnail: ByteArray, data: ByteArray) {
         db.insert("image", null, ContentValues().apply {
             put("id", image.id)
-            put("filename", image.filename)
+            put("fileName", image.filename)
             put("contentType", image.contentType)
             put("created", image.created)
             put("width", image.width)
@@ -159,7 +159,7 @@ class SQLiteAlbum(context: Context) : IAlbum, Closeable {
     private fun convertImage(cursor: Cursor): ImageInfo {
         return ImageInfo(
             id = cursor.getString(cursor.getColumnIndexOrThrow("id")),
-            filename = cursor.getString(cursor.getColumnIndexOrThrow("filename")),
+            filename = cursor.getString(cursor.getColumnIndexOrThrow("fileName")),
             contentType = cursor.getString(cursor.getColumnIndexOrThrow("contentType")),
             created = cursor.getString(cursor.getColumnIndexOrThrow("created")),
             width = cursor.getInt(cursor.getColumnIndexOrThrow("width")),
