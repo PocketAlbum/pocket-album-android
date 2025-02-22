@@ -19,4 +19,7 @@
     <string name="unknown_error">Unknown error</string>
     <string name="error_file_empty">Selected file is empty</string>
     <string name="no_file_selected">No file selected</string>
+    <string name="search">Search</string>
+    <string name="albums">Albums</string>
+    <string name="settings">Settings</string>
 </resources>

@@ -9,9 +9,13 @@ import android.os.IBinder
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.GridView
+import android.widget.LinearLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import si.pocketalbum.services.AlbumService
 import si.pocketalbum.view.DateScroller
 import si.pocketalbum.view.ImagesAdapter
@@ -72,6 +76,21 @@ class MainActivity : ComponentActivity() {
                 else finish()
             }
         })
+
+        val lltActions = findViewById<LinearLayout>(R.id.lltActions)
+        ViewCompat.setOnApplyWindowInsetsListener(lltActions) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(
+                left = bars.left,
+                top = 0,
+                right = bars.right,
+                bottom = bars.bottom,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
 
         val intent = Intent(this, AlbumService::class.java)
         startService(intent)
