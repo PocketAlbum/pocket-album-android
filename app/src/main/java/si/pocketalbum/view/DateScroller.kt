@@ -12,6 +12,9 @@ import android.widget.FrameLayout
 import android.widget.GridView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import si.pocketalbum.R
 import si.pocketalbum.core.ImageCache
 import kotlin.collections.set
@@ -36,6 +39,20 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         frmRoot = findViewById(R.id.frmRoot)
         lblDate = findViewById(R.id.lblDate)
         lltTimeline = findViewById(R.id.lltTimeline)
+
+        ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(
+                left = 0,
+                top = bars.top,
+                right = 0,
+                bottom = 0,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onScrollChange(
@@ -50,7 +67,7 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
             val i = (v.lastVisiblePosition + v.firstVisiblePosition) / 2
             val index = v.count - i - 1
             val position = v.firstVisiblePosition.toDouble() / v.count
-            val availableHeight = height - lblDate.height
+            val availableHeight = height - paddingTop - paddingBottom - lblDate.height
             lblDate.text = getYearFoIndex(index).toString()
             val layout = lblDate.layoutParams as LayoutParams
             layout.topMargin = (position * availableHeight).toInt()
