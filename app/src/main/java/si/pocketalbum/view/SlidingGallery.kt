@@ -140,7 +140,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
 
         btnInfo.setOnClickListener {
             val ctx = context
-            val dialog = Dialog(context)
+            val dialog = Dialog(context, R.style.DialogWindowPrimary)
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setCancelable(false)
             dialog.setContentView(R.layout.dialog_image_info)
