@@ -22,4 +22,10 @@
     <string name="search">Search</string>
     <string name="albums">Albums</string>
     <string name="settings">Settings</string>
+    <string name="year">Year</string>
+    <string name="part_of_day">Part of day</string>
+    <string name="morning">Morning</string>
+    <string name="day">Day</string>
+    <string name="evening">Evening</string>
+    <string name="night">Night</string>
 </resources>

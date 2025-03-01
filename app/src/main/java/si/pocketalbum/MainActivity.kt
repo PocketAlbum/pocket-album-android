@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.Button
 import android.widget.GridView
 import android.widget.LinearLayout
 import androidx.activity.ComponentActivity
@@ -19,6 +20,7 @@ import androidx.core.view.updatePadding
 import si.pocketalbum.services.AlbumService
 import si.pocketalbum.view.DateScroller
 import si.pocketalbum.view.ImagesAdapter
+import si.pocketalbum.view.SearchPanel
 import si.pocketalbum.view.SlidingGallery
 
 class MainActivity : ComponentActivity() {
@@ -85,7 +87,6 @@ class MainActivity : ComponentActivity() {
             )
             v.updatePadding(
                 left = bars.left,
-                top = 0,
                 right = bars.right,
                 bottom = bars.bottom,
             )
@@ -105,18 +106,15 @@ class MainActivity : ComponentActivity() {
     }
 
     fun albumLoaded() {
-        val album = albumService.getAlbum()
-        val cache = albumService.getCache()
-
         val lstImages = findViewById<GridView>(R.id.lstImages)
         val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
         val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
-        dateScroller.setAlbum(cache)
+        dateScroller.setService(albumService)
+        slidingGallery.setService(albumService)
 
-        slidingGallery?.loadAlbum(album, cache)
-
-        lstImages.adapter = ImagesAdapter(baseContext, cache)
+        val adapter = ImagesAdapter(baseContext, albumService)
+        lstImages.adapter = adapter
         lstImages.setOnItemClickListener { adapterView, view, i, l ->
             slidingGallery.visibility = VISIBLE
             slidingGallery.openImage(i)
@@ -125,6 +123,23 @@ class MainActivity : ComponentActivity() {
         lstImages.setOnScrollChangeListener(dateScroller)
 
         restoreSavedState(lstImages, slidingGallery)
+
+        val pnlSearch: SearchPanel = findViewById(R.id.pnlSearch)
+        pnlSearch.setOnSearchListener {
+            albumService.filterChanged(it)
+            adapter.notifyDataSetChanged()
+            dateScroller.loadAlbum()
+            slidingGallery.loadAlbum()
+        }
+
+        findViewById<Button>(R.id.btnSearch).setOnClickListener {
+            if (pnlSearch.visibility == VISIBLE) {
+                pnlSearch.visibility = GONE
+            }
+            else {
+                pnlSearch.visibility = VISIBLE
+            }
+        }
     }
 
     private fun restoreSavedState(lstImages: GridView, slidingGallery: SlidingGallery) {

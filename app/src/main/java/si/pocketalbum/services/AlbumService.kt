@@ -17,6 +17,7 @@ class AlbumService : Service() {
 
     private var album: SQLiteAlbum? = null
     private var cache: ImageCache? = null
+    private var filter = FilterModel(null, null)
 
     inner class LocalBinder : Binder() {
         fun getService(): AlbumService = this@AlbumService
@@ -41,7 +42,7 @@ class AlbumService : Service() {
         val dbFile = File(filesDir, "album.sqlite")
         if (dbFile.exists()) {
             val openedAlbum = SQLiteAlbum(this, dbFile)
-            val newCache = ImageCache(openedAlbum, FilterModel(null, null))
+            val newCache = ImageCache(openedAlbum, filter)
             album = openedAlbum
             cache = newCache
         }
@@ -63,5 +64,10 @@ class AlbumService : Service() {
 
     fun isAlbumLoaded(): Boolean {
         return album != null && cache != null
+    }
+
+    fun filterChanged(filter: FilterModel) {
+        this.filter = filter
+        reloadAlbumFile()
     }
 }

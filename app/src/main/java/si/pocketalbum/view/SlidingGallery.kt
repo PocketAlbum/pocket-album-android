@@ -23,9 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import si.pocketalbum.R
-import si.pocketalbum.core.IAlbum
-import si.pocketalbum.core.ImageCache
 import si.pocketalbum.core.models.ImageInfo
+import si.pocketalbum.services.AlbumService
 import java.io.File
 import java.io.FileOutputStream
 import java.time.LocalDateTime
@@ -43,8 +42,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
     private val btnMap : Button
     private val btnInfo : Button
     private val btnShare : Button
-
-    private var album : IAlbum? = null
+    private var albumService: AlbumService? = null
 
     init {
         inflate(context, R.layout.view_sliding_gallery, this)
@@ -83,10 +81,13 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         }
     }
 
-    fun loadAlbum(album: IAlbum, cache: ImageCache) {
-        this.album = album
+    fun setService(albumService: AlbumService) {
+        this.albumService = albumService
+        loadAlbum()
+    }
 
-        vpgImages.adapter = ImagesRecyclerAdapter(cache) {
+    fun loadAlbum() {
+        vpgImages.adapter = ImagesRecyclerAdapter(albumService?.getCache()!!) {
             val v = if (lltDetails.visibility == VISIBLE) INVISIBLE else VISIBLE
             lltDetails.visibility = v
             lltActions.visibility = v
@@ -95,7 +96,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
             override fun onPageSelected(position: Int) {
                 try {
                     CoroutineScope(Job() + Dispatchers.IO).launch {
-
+                        val cache = albumService?.getCache()!!
                         val im = cache.getImage(cache.info.imageCount - position - 1)
                         lltDetails.post {
                             displayImageInfo(im.imageInfo)
@@ -174,7 +175,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
             file.createNewFile()
 
             val fileStream = FileOutputStream(file)
-            fileStream.write(album?.getData(image.id))
+            fileStream.write(albumService?.getAlbum()?.getData(image.id))
             fileStream.close()
 
             val uri: Uri = getUriForFile(context, "si.pocketalbum", file)

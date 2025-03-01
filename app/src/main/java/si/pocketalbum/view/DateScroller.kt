@@ -16,7 +16,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import si.pocketalbum.R
-import si.pocketalbum.core.ImageCache
+import si.pocketalbum.services.AlbumService
 import kotlin.collections.set
 
 class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs),
@@ -29,6 +29,7 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
     private var touch = false
     private var timeout = false
     private var mode = InteractionModes.HIDDEN
+    private var albumService: AlbumService? = null
 
     enum class InteractionModes {
         HIDDEN, VISIBLE, SCROLLING
@@ -53,6 +54,11 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
             )
             WindowInsetsCompat.CONSUMED
         }
+    }
+
+    fun setService(albumService: AlbumService) {
+        this.albumService = albumService
+        loadAlbum()
     }
 
     override fun onScrollChange(
@@ -124,12 +130,13 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         return 0
     }
 
-    fun setAlbum(album: ImageCache)
+    fun loadAlbum()
     {
         val newOffsets = mutableMapOf<Int, Int>()
         var cumulativeCount = 0
 
-        for (year in album.info.years.sortedBy { it.year }) {
+        val cache = albumService?.getCache()!!
+        for (year in cache.info.years.sortedBy { it.year }) {
             cumulativeCount += year.count
             newOffsets[cumulativeCount] = year.year
         }

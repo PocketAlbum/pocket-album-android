@@ -74,10 +74,10 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         }
         if (filter.timeOfDay != null) {
             conditions.add(when(filter.timeOfDay) {
-                FilterModel.TimesOfDay.Morning -> "h >= 6 AND h < 12"
-                FilterModel.TimesOfDay.Afternoon -> "h >= 12 AND h < 18"
-                FilterModel.TimesOfDay.Evening -> "h >= 18"
-                FilterModel.TimesOfDay.Night -> "h < 6"
+                FilterModel.TimesOfDay.Morning -> "h >= 5 AND h < 9"
+                FilterModel.TimesOfDay.Day -> "h >= 9 AND h < 17"
+                FilterModel.TimesOfDay.Evening -> "h >= 17 AND h < 21"
+                FilterModel.TimesOfDay.Night -> "h >= 21 OR h < 5"
             })
         }
         return conditions.joinToString(" AND ")

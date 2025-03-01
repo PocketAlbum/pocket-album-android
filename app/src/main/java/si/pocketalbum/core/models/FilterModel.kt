@@ -4,7 +4,7 @@ data class FilterModel (val year: Interval?, val timeOfDay: TimesOfDay?)
 {
     enum class TimesOfDay {
         Morning,
-        Afternoon,
+        Day,
         Evening,
         Night
     }
