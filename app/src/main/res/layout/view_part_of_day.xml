@@ -7,8 +7,8 @@
     <ImageButton
         android:id="@+id/btnMorning"
         style="@style/ButtonSecondary.Small"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/button_small"
+        android:layout_height="@dimen/button_small"
         android:contentDescription="@string/morning"
         android:src="@drawable/weather_sunset_up"
         android:layout_margin="2dp"/>
@@ -16,8 +16,8 @@
     <ImageButton
         android:id="@+id/btnDay"
         style="@style/ButtonSecondary.Small"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/button_small"
+        android:layout_height="@dimen/button_small"
         android:contentDescription="@string/day"
         android:src="@drawable/weather_sunny"
         android:layout_margin="2dp"/>
@@ -25,8 +25,8 @@
     <ImageButton
         android:id="@+id/btnEvening"
         style="@style/ButtonSecondary.Small"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/button_small"
+        android:layout_height="@dimen/button_small"
         android:contentDescription="@string/evening"
         android:src="@drawable/weather_sunset_down"
         android:layout_margin="2dp"/>
@@ -34,8 +34,8 @@
     <ImageButton
         android:id="@+id/btnNight"
         style="@style/ButtonSecondary.Small"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/button_small"
+        android:layout_height="@dimen/button_small"
         android:contentDescription="@string/night"
         android:src="@drawable/weather_night"
         android:layout_margin="2dp"/>

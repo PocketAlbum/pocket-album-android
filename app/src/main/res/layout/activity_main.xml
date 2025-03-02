@@ -28,8 +28,8 @@
 
     <si.pocketalbum.view.SearchPanel
         android:id="@+id/pnlSearch"
-        android:layout_width="360dp"
-        android:layout_height="130dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/lltActions"
