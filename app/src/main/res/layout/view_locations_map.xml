@@ -11,6 +11,17 @@
         android:layout_height="match_parent"
         android:background="@color/white"/>
 
+    <TextView
+        android:id="@+id/lblZoomMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextWarning"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="10dp"
+        android:text="@string/zoom_in_message"/>
+
     <ImageButton
         android:id="@+id/btnZoomOut"
         android:layout_width="@dimen/button_small"

@@ -26,7 +26,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/lltActions"/>
 
-    <si.pocketalbum.view.SearchPanel
+    <si.pocketalbum.view.search.SearchPanel
         android:id="@+id/pnlSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

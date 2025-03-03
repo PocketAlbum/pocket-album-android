@@ -20,7 +20,7 @@ import androidx.core.view.updatePadding
 import si.pocketalbum.services.AlbumService
 import si.pocketalbum.view.DateScroller
 import si.pocketalbum.view.ImagesAdapter
-import si.pocketalbum.view.SearchPanel
+import si.pocketalbum.view.search.SearchPanel
 import si.pocketalbum.view.SlidingGallery
 
 class MainActivity : ComponentActivity() {

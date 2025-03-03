@@ -1,6 +1,6 @@
 package si.pocketalbum.core.models
 
-data class FilterModel (val year: Interval?, val timeOfDay: TimesOfDay?)
+data class FilterModel (val year: Interval?, val timeOfDay: TimesOfDay?, val location: BoundingBox?)
 {
     enum class TimesOfDay {
         Morning,
@@ -10,5 +10,5 @@ data class FilterModel (val year: Interval?, val timeOfDay: TimesOfDay?)
     }
 
     val hasAny: Boolean
-        get() = year != null || timeOfDay != null
+        get() = year != null || timeOfDay != null || location != null
 }

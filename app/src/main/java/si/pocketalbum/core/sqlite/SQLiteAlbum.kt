@@ -77,8 +77,14 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
                 FilterModel.TimesOfDay.Morning -> "h >= 5 AND h < 9"
                 FilterModel.TimesOfDay.Day -> "h >= 9 AND h < 17"
                 FilterModel.TimesOfDay.Evening -> "h >= 17 AND h < 21"
-                FilterModel.TimesOfDay.Night -> "h >= 21 OR h < 5"
+                FilterModel.TimesOfDay.Night -> "(h >= 21 OR h < 5)"
             })
+        }
+        if (filter.location != null) {
+            conditions.add("latitude > ${filter.location.minLatitude} AND " +
+                    "latitude < ${filter.location.maxLatitude} AND " +
+                    "longitude < ${filter.location.maxLongitude} AND " +
+                    "longitude > ${filter.location.minLongitude}")
         }
         return conditions.joinToString(" AND ")
     }

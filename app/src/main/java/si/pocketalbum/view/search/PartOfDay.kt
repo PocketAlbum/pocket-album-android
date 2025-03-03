@@ -1,4 +1,4 @@
-package si.pocketalbum.view
+package si.pocketalbum.view.search
 
 import android.content.Context
 import android.util.AttributeSet

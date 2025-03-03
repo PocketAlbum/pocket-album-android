@@ -11,13 +11,15 @@ import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.sqlite.SQLiteAlbum
 import java.io.File
 import java.io.FileNotFoundException
+import java.time.Duration
+import java.time.Instant
 
 class AlbumService : Service() {
     private val binder = LocalBinder()
 
     private var album: SQLiteAlbum? = null
     private var cache: ImageCache? = null
-    private var filter = FilterModel(null, null)
+    private var filter = FilterModel(null, null, null)
 
     inner class LocalBinder : Binder() {
         fun getService(): AlbumService = this@AlbumService
@@ -41,12 +43,18 @@ class AlbumService : Service() {
     fun reloadAlbumFile() {
         val dbFile = File(filesDir, "album.sqlite")
         if (dbFile.exists()) {
-            val openedAlbum = SQLiteAlbum(this, dbFile)
-            val newCache = ImageCache(openedAlbum, filter)
-            album = openedAlbum
-            cache = newCache
+            album = SQLiteAlbum(this, dbFile)
+            reloadCache()
         }
         else throw FileNotFoundException("File album.sqlite not found")
+    }
+
+    private fun reloadCache() {
+        val start = Instant.now()
+        cache = ImageCache(album!!, filter)
+        val end = Instant.now()
+        val duration = Duration.between(start, end)
+        Log.i("AlbumService", "Album cache loaded in ${duration.toMillis()} ms")
     }
 
     override fun onDestroy() {
@@ -68,6 +76,6 @@ class AlbumService : Service() {
 
     fun filterChanged(filter: FilterModel) {
         this.filter = filter
-        reloadAlbumFile()
+        reloadCache()
     }
 }

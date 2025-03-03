@@ -1,4 +1,4 @@
-package si.pocketalbum.view
+package si.pocketalbum.view.search
 
 import android.content.Context
 import android.util.AttributeSet
@@ -19,11 +19,17 @@ class SearchPanel (context: Context, attrs: AttributeSet?) : FrameLayout(context
 
         val partOfDay = findViewById<PartOfDay>(R.id.partOfDay)
         partOfDay.setOnChangeListener {
-            filter = FilterModel(null, it)
+            filter = FilterModel(filter.year, it, filter.location)
+            listener?.accept(filter)
+        }
+
+        val location = findViewById<LocationsMap>(R.id.locationsMap)
+        location.setOnChangeListener {
+            filter = FilterModel(filter.year, filter.timeOfDay, it)
             listener?.accept(filter)
         }
     }
-    private var filter = FilterModel(null, null)
+    private var filter = FilterModel(null, null, null)
     private var listener: Consumer<FilterModel>? = null
 
     fun setOnSearchListener(l: Consumer<FilterModel>) {
