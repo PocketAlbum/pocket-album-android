@@ -1,4 +1,4 @@
-package si.pocketalbum.view
+package si.pocketalbum.view.timeline
 
 import android.content.Context
 import android.util.AttributeSet
@@ -10,22 +10,20 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.FrameLayout
 import android.widget.GridView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import si.pocketalbum.R
 import si.pocketalbum.services.AlbumService
-import kotlin.collections.set
 
 class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs),
     View.OnScrollChangeListener, View.OnTouchListener {
 
     private val frmRoot : FrameLayout
     private val lblDate : TextView
-    private val lltTimeline : LinearLayout
-    private var offsets : Map<Int, Int>? = null
+    private val timelineView : TimelineView
+    private var offsets : List<YearOffset>? = null
     private var touch = false
     private var timeout = false
     private var mode = InteractionModes.HIDDEN
@@ -39,7 +37,7 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         inflate(context, R.layout.view_date_scroller, this)
         frmRoot = findViewById(R.id.frmRoot)
         lblDate = findViewById(R.id.lblDate)
-        lltTimeline = findViewById(R.id.lltTimeline)
+        timelineView = findViewById(R.id.timelineView)
 
         ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
             val bars = insets.getInsets(
@@ -108,9 +106,15 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         lblDate.clearAnimation()
         val animation = object : Animation() {
             override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+                val leftMargin = start + ((end - start) * interpolatedTime).toInt()
+
                 val params = lblDate.layoutParams as LayoutParams
-                params.leftMargin = start + ((end - start) * interpolatedTime).toInt()
+                params.leftMargin = leftMargin
                 lblDate.layoutParams = params
+
+                val timelineParams = timelineView.layoutParams as LayoutParams
+                timelineParams.leftMargin = leftMargin
+                timelineView.layoutParams = timelineParams
             }
         }
         animation.duration = 200 // in ms
@@ -119,12 +123,9 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
 
     private fun getYearFoIndex(index : Int) : Int
     {
-        val yearOffsets = offsets?.entries
-        if (yearOffsets != null) {
-            for (year in yearOffsets) {
-                if (year.key > index) {
-                    return year.value
-                }
+        for (offset in offsets ?: listOf()) {
+            if (offset.cumulativeCount > index) {
+                return offset.year
             }
         }
         return 0
@@ -132,15 +133,18 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
 
     fun loadAlbum()
     {
-        val newOffsets = mutableMapOf<Int, Int>()
+        val newOffsets = mutableListOf<YearOffset>()
         var cumulativeCount = 0
 
         val cache = albumService?.getCache()!!
         for (year in cache.info.years.sortedBy { it.year }) {
             cumulativeCount += year.count
-            newOffsets[cumulativeCount] = year.year
+            newOffsets.add(YearOffset(year.year, cumulativeCount))
         }
         offsets = newOffsets
+
+        timelineView.offsets = newOffsets
+        timelineView.refreshDrawableState()
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -157,4 +161,6 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         }
         return false
     }
+
+    data class YearOffset(val year: Int, val cumulativeCount: Int)
 }

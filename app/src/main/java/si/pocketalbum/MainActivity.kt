@@ -18,7 +18,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import si.pocketalbum.services.AlbumService
-import si.pocketalbum.view.DateScroller
+import si.pocketalbum.view.timeline.DateScroller
 import si.pocketalbum.view.ImagesAdapter
 import si.pocketalbum.view.search.SearchPanel
 import si.pocketalbum.view.SlidingGallery

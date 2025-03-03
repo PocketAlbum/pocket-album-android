@@ -7,6 +7,11 @@
     android:layout_height="match_parent"
     android:layout_marginRight="2dp"
     tools:ignore="RtlHardcoded">
+    <si.pocketalbum.view.timeline.TimelineView
+        android:id="@+id/timelineView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <TextView
         android:id="@+id/lblDate"
         android:layout_width="@dimen/date_button_width"
@@ -14,12 +19,4 @@
         android:textAlignment="center"
         android:background="@drawable/background_white"
         tools:ignore="RtlHardcoded"/>
-
-    <LinearLayout
-        android:id="@+id/lltTimeline"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-    </LinearLayout>
 </FrameLayout>
