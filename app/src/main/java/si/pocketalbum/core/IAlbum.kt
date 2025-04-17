@@ -5,9 +5,12 @@ import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.models.ImageInfo
 import si.pocketalbum.core.models.ImageThumbnail
 import si.pocketalbum.core.models.Interval
+import si.pocketalbum.core.models.MetadataModel
 import si.pocketalbum.core.models.YearIndex
 
 interface IAlbum {
+    fun getMetadata(): MetadataModel
+
     fun getInfo(filter: FilterModel): AlbumInfo
 
     fun getData(id: String): ByteArray

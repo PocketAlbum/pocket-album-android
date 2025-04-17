@@ -14,6 +14,7 @@ import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.models.ImageInfo
 import si.pocketalbum.core.models.ImageThumbnail
 import si.pocketalbum.core.models.Interval
+import si.pocketalbum.core.models.MetadataModel
 import si.pocketalbum.core.models.YearIndex
 import java.io.Closeable
 import java.io.DataInputStream
@@ -28,6 +29,10 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
 
     private val yearQuery = "CAST(substr(created, 1, 4) AS SIGNED) AS y"
     private val hourQuery = "CAST(substr(created, 12, 2) AS SIGNED) AS h"
+
+    override fun getMetadata(): MetadataModel {
+        return MetadataHelper.read(db)
+    }
 
     override fun getInfo(filter: FilterModel): AlbumInfo {
         val where = " WHERE " + getWhere(filter)

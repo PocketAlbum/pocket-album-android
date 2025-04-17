@@ -1,27 +1,32 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package si.pocketalbum.core.models
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-public class MetadataModel (
-    val id: UUID,
+class MetadataModel (
+    val id: Uuid,
     val version: String,
     val name: String,
     val description: String?,
-    val created: String,
-    val updated: String
+    val created: LocalDateTime,
+    val updated: LocalDateTime
 ) {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+    companion object {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+    }
 
     public fun create(name: String) : MetadataModel {
         return MetadataModel(
-            id = UUID.randomUUID(),
+            id = Uuid.random(),
             version = "PocketAlbum 1.0",
             name = name,
             description = null,
-            created = LocalDateTime.now().format(formatter),
-            updated = LocalDateTime.now().format(formatter)
+            created = LocalDateTime.now(),
+            updated = LocalDateTime.now()
         )
     }
 

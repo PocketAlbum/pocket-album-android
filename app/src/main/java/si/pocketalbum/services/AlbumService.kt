@@ -44,6 +44,7 @@ class AlbumService : Service() {
         val dbFile = File(filesDir, "album.sqlite")
         if (dbFile.exists()) {
             album = SQLiteAlbum(this, dbFile)
+            album?.getMetadata()?.validate()
             reloadCache()
         }
         else throw FileNotFoundException("File album.sqlite not found")
