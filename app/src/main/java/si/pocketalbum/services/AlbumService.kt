@@ -5,10 +5,15 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.core.IAlbum
 import si.pocketalbum.core.ImageCache
 import si.pocketalbum.core.models.FilterModel
-import si.pocketalbum.core.sqlite.SQLiteAlbum
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.Duration
@@ -17,9 +22,7 @@ import java.time.Instant
 class AlbumService : Service() {
     private val binder = LocalBinder()
 
-    private var album: SQLiteAlbum? = null
-    private var cache: ImageCache? = null
-    private var filter = FilterModel(null, null, null)
+    private var deferredConnection: Deferred<AlbumConnection>? = null
 
     inner class LocalBinder : Binder() {
         fun getService(): AlbumService = this@AlbumService
@@ -32,51 +35,69 @@ class AlbumService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i("AlbumService", "Creating service")
+
+        loadAlbumAsync()
+    }
+
+    fun loadAlbumAsync() {
+        deferredConnection = CoroutineScope(Job() + Dispatchers.IO).async {
+            loadAlbum()
+        }
+    }
+
+    private fun loadAlbum(): AlbumConnection {
         try {
-            reloadAlbumFile()
+            val dbFile = File(filesDir, "album.sqlite")
+            if (!dbFile.exists()) {
+                throw FileNotFoundException("File album.sqlite not found")
+            }
+            Log.i("AlbumService", "Opening local album.sqlite")
+            val start = Instant.now()
+            val connection = AlbumConnection.open(baseContext, dbFile)
+            val end = Instant.now()
+            val duration = Duration.between(start, end)
+            Log.i("AlbumService", "Opened album in ${duration.toMillis()} ms")
+            return connection
         }
         catch (e: Exception) {
             Log.e("AlbumService", "Failed to load album", e)
+            throw e
         }
-    }
-
-    fun reloadAlbumFile() {
-        val dbFile = File(filesDir, "album.sqlite")
-        if (dbFile.exists()) {
-            album = SQLiteAlbum(this, dbFile)
-            album?.getMetadata()?.validate()
-            reloadCache()
-        }
-        else throw FileNotFoundException("File album.sqlite not found")
-    }
-
-    private fun reloadCache() {
-        val start = Instant.now()
-        cache = ImageCache(album!!, filter)
-        val end = Instant.now()
-        val duration = Duration.between(start, end)
-        Log.i("AlbumService", "Album cache loaded in ${duration.toMillis()} ms")
     }
 
     override fun onDestroy() {
         Log.i("AlbumService", "Destroying service")
-        album?.close()
+        try {
+            deferredConnection?.getCompleted()?.close();
+        }
+        catch (e: Exception) {
+            throw IllegalStateException("No album is loaded", e)
+        }
+    }
+
+    fun getConnectionDeferred(): Deferred<AlbumConnection> {
+        return deferredConnection ?: throw IllegalStateException("No deferred connection")
     }
 
     fun getAlbum(): IAlbum {
-        return album ?: throw IllegalStateException("No album is loaded")
+        try {
+            return deferredConnection!!.getCompleted().album
+        }
+        catch (e: Exception) {
+            throw IllegalStateException("No album is loaded", e)
+        }
     }
 
     fun getCache(): ImageCache {
-        return cache ?: throw IllegalStateException("No album is loaded")
+        try {
+            return deferredConnection!!.getCompleted().cache
+        }
+        catch (e: Exception) {
+            throw IllegalStateException("No album is loaded", e)
+        }
     }
 
-    fun isAlbumLoaded(): Boolean {
-        return album != null && cache != null
-    }
-
-    fun filterChanged(filter: FilterModel) {
-        this.filter = filter
-        reloadCache()
+    fun changeFilter(newFilter: FilterModel) {
+        deferredConnection!!.getCompleted().changeFilter(newFilter)
     }
 }

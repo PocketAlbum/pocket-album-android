@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Button
@@ -17,6 +18,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import si.pocketalbum.services.AlbumService
 import si.pocketalbum.view.timeline.DateScroller
 import si.pocketalbum.view.ImagesAdapter
@@ -40,12 +45,17 @@ class MainActivity : ComponentActivity() {
             albumService = binder.getService()
             serviceBound = true
 
-            if (!albumService.isAlbumLoaded())
-            {
-                startActivity(Intent(baseContext, ImportActivity::class.java))
-            }
-            else {
-                albumLoaded()
+            CoroutineScope(Job() + Dispatchers.IO).launch {
+                try {
+                    albumService.getConnectionDeferred().await()
+                    runOnUiThread {
+                        albumLoaded()
+                    }
+                }
+                catch (e: Exception) {
+                    Log.e("MainActivity", "Failed to load album", e)
+                    startActivity(Intent(baseContext, ImportActivity::class.java))
+                }
             }
         }
 
@@ -126,7 +136,7 @@ class MainActivity : ComponentActivity() {
 
         val pnlSearch: SearchPanel = findViewById(R.id.pnlSearch)
         pnlSearch.setOnSearchListener {
-            albumService.filterChanged(it)
+            albumService.changeFilter(it)
             adapter.notifyDataSetChanged()
             dateScroller.loadAlbum()
             slidingGallery.loadAlbum()

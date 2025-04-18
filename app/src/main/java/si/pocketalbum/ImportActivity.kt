@@ -100,7 +100,7 @@ class ImportActivity : ComponentActivity() {
             CoroutineScope(Job() + Dispatchers.IO).launch {
                 copyUriToFile(baseContext, uri)
                 runOnUiThread {
-                    albumService!!.reloadAlbumFile()
+                    albumService!!.loadAlbumAsync()
                     finish()
                 }
             }

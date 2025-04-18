@@ -26,4 +26,6 @@ interface IAlbum {
     fun storeYearIndex(yearIndex: YearIndex)
 
     fun removeYearIndex(year: Int)
+
+    fun close()
 }
