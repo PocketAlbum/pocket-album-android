@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.services.AlbumService
 import si.pocketalbum.view.timeline.DateScroller
 import si.pocketalbum.view.ImagesAdapter
@@ -47,9 +48,9 @@ class MainActivity : ComponentActivity() {
 
             CoroutineScope(Job() + Dispatchers.IO).launch {
                 try {
-                    albumService.getConnectionDeferred().await()
+                    val con = albumService.getConnectionDeferred().await()
                     runOnUiThread {
-                        albumLoaded()
+                        albumLoaded(con)
                     }
                 }
                 catch (e: Exception) {
@@ -115,15 +116,15 @@ class MainActivity : ComponentActivity() {
         serviceBound = false
     }
 
-    fun albumLoaded() {
+    fun albumLoaded(connection: AlbumConnection) {
         val lstImages = findViewById<GridView>(R.id.lstImages)
         val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
         val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
-        dateScroller.setService(albumService)
-        slidingGallery.setService(albumService)
+        dateScroller.albumLoaded(connection)
+        slidingGallery.albumLoaded(connection)
 
-        val adapter = ImagesAdapter(baseContext, albumService)
+        val adapter = ImagesAdapter(baseContext, connection)
         lstImages.adapter = adapter
         lstImages.setOnItemClickListener { adapterView, view, i, l ->
             slidingGallery.visibility = VISIBLE

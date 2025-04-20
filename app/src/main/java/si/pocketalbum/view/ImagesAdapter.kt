@@ -17,11 +17,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import si.pocketalbum.R
-import si.pocketalbum.services.AlbumService
+import si.pocketalbum.core.AlbumConnection
 
-class ImagesAdapter(ctx: Context, private val albumService: AlbumService) : BaseAdapter() {
+class ImagesAdapter(ctx: Context, private val connection: AlbumConnection) : BaseAdapter() {
 
-    private var info = albumService.getCache().info
+    private var info = connection.cache.info
     private val inflater = LayoutInflater.from(ctx)
 
     override fun getCount(): Int {
@@ -58,7 +58,7 @@ class ImagesAdapter(ctx: Context, private val albumService: AlbumService) : Base
         imageView.tag = CoroutineScope(Job() + Dispatchers.IO).launch {
             delay(100)
             try {
-                val image = albumService.getCache().getImage(index)
+                val image = connection.cache.getImage(index)
                 val thumbnail = image.thumbnail
                 val bm = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.size)
 
@@ -77,7 +77,7 @@ class ImagesAdapter(ctx: Context, private val albumService: AlbumService) : Base
     }
 
     override fun notifyDataSetChanged() {
-        info = albumService.getCache().info
+        info = connection.cache.info
         super.notifyDataSetChanged()
     }
 }

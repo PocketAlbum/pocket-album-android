@@ -11,8 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import si.pocketalbum.core.AlbumConnection
-import si.pocketalbum.core.IAlbum
-import si.pocketalbum.core.ImageCache
 import si.pocketalbum.core.models.FilterModel
 import java.io.File
 import java.io.FileNotFoundException
@@ -71,30 +69,12 @@ class AlbumService : Service() {
             deferredConnection?.getCompleted()?.close();
         }
         catch (e: Exception) {
-            throw IllegalStateException("No album is loaded", e)
+            Log.i("AlbumService", "No album is loaded", e)
         }
     }
 
     fun getConnectionDeferred(): Deferred<AlbumConnection> {
         return deferredConnection ?: throw IllegalStateException("No deferred connection")
-    }
-
-    fun getAlbum(): IAlbum {
-        try {
-            return deferredConnection!!.getCompleted().album
-        }
-        catch (e: Exception) {
-            throw IllegalStateException("No album is loaded", e)
-        }
-    }
-
-    fun getCache(): ImageCache {
-        try {
-            return deferredConnection!!.getCompleted().cache
-        }
-        catch (e: Exception) {
-            throw IllegalStateException("No album is loaded", e)
-        }
     }
 
     fun changeFilter(newFilter: FilterModel) {
