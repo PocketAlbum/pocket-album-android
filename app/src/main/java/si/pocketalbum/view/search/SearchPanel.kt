@@ -6,10 +6,13 @@ import android.view.MotionEvent
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import si.pocketalbum.R
+import si.pocketalbum.core.HeatmapCache
 import si.pocketalbum.core.models.FilterModel
 import java.util.function.Consumer
 
 class SearchPanel (context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
+    private val locationMap: LocationsMap
+
     init {
         inflate(context, R.layout.view_search_panel, this)
 
@@ -23,11 +26,12 @@ class SearchPanel (context: Context, attrs: AttributeSet?) : FrameLayout(context
             listener?.accept(filter)
         }
 
-        val location = findViewById<LocationsMap>(R.id.locationsMap)
-        location.setOnChangeListener {
+        locationMap = findViewById(R.id.locationsMap)
+        locationMap.setOnChangeListener {
             filter = FilterModel(filter.year, filter.timeOfDay, it)
             listener?.accept(filter)
         }
+
     }
     private var filter = FilterModel(null, null, null)
     private var listener: Consumer<FilterModel>? = null
@@ -39,5 +43,9 @@ class SearchPanel (context: Context, attrs: AttributeSet?) : FrameLayout(context
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         super.onTouchEvent(event)
         return true
+    }
+
+    fun albumLoaded(heatmap: HeatmapCache) {
+        locationMap.showHeatmap(heatmap)
     }
 }

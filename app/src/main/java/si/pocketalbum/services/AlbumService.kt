@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import si.pocketalbum.core.AlbumConnection
+import si.pocketalbum.core.HeatmapCache
 import si.pocketalbum.core.models.FilterModel
 import java.io.File
 import java.io.FileNotFoundException
@@ -79,5 +80,14 @@ class AlbumService : Service() {
 
     fun changeFilter(newFilter: FilterModel) {
         deferredConnection!!.getCompleted().changeFilter(newFilter)
+    }
+
+    fun getHeatmapCache(): HeatmapCache {
+        try {
+            return deferredConnection!!.getCompleted().heatmaps
+        }
+        catch (e: Exception) {
+            throw IllegalStateException("No album is loaded", e)
+        }
     }
 }

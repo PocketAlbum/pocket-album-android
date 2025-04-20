@@ -1,13 +1,14 @@
 [versions]
 agp = "8.9.1"
 kotlin = "2.0.20"
-coreKtx = "1.15.0"
+coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
+kotlinxSerializationJson = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2025.03.01"
+composeBom = "2025.04.00"
 viewpager2 = "1.1.0"
 constraintlayout = "2.2.1"
 jetbrainsKotlinJvm = "1.9.0"
@@ -29,8 +30,12 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-mapsforge = { group = "org.mapsforge", name = "mapsforge-map-android", version = "0.23.0" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor" }
+mapsforge = { group = "org.mapsforge", name = "mapsforge-map-android", version = "0.24.1" }
 caverock = { group = "com.caverock", name = "androidsvg", version = "1.4" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version = "1.10.1"}
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version = "1.8.6"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

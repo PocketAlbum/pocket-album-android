@@ -142,6 +142,7 @@ class MainActivity : ComponentActivity() {
             dateScroller.loadAlbum()
             slidingGallery.loadAlbum()
         }
+        pnlSearch.albumLoaded(albumService.getHeatmapCache())
 
         findViewById<Button>(R.id.btnSearch).setOnClickListener {
             if (pnlSearch.visibility == VISIBLE) {

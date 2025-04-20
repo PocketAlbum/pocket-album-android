@@ -16,4 +16,7 @@
     <color name="redDark">#e6617d</color>
 
     <color name="brownPrimary">#e6cdad</color>
+
+    <color name="heatmapMin">#ffd500</color>
+    <color name="heatmapMax">#c2042c</color>
 </resources>

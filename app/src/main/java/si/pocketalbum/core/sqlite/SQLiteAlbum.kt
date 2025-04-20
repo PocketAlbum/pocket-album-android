@@ -198,7 +198,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
     }
 
     override fun getYearIndex(): List<YearIndex> {
-        val cursor = db.query("index", arrayOf("year", "count", "crc", "size"),
+        val cursor = db.query("\"index\"", arrayOf("year", "count", "crc", "size"),
             null, null, null, null, "year")
 
         val index = mutableListOf<YearIndex>()
