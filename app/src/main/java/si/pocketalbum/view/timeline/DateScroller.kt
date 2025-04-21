@@ -2,8 +2,10 @@ package si.pocketalbum.view.timeline
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.MotionEvent.ACTION_DOWN
+import android.view.MotionEvent.ACTION_MOVE
 import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.animation.Animation
@@ -28,6 +30,7 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
     private var timeout = false
     private var mode = InteractionModes.HIDDEN
     private var connection: AlbumConnection? = null
+    private var gridView: GridView? = null
 
     enum class InteractionModes {
         HIDDEN, VISIBLE, SCROLLING
@@ -39,6 +42,7 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         lblDate = findViewById(R.id.lblDate)
         timelineView = findViewById(R.id.timelineView)
 
+        lblDate.setOnTouchListener(this)
         ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
@@ -54,8 +58,9 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         }
     }
 
-    fun albumLoaded(connection: AlbumConnection) {
+    fun albumLoaded(connection: AlbumConnection, gridView: GridView) {
         this.connection = connection
+        this.gridView = gridView
         loadAlbum()
     }
 
@@ -72,7 +77,7 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
             val index = v.count - i - 1
             val position = v.firstVisiblePosition.toDouble() / v.count
             val availableHeight = height - paddingTop - paddingBottom - lblDate.height
-            lblDate.text = getYearFoIndex(index).toString()
+            lblDate.text = getYearForIndex(index).toString()
             val layout = lblDate.layoutParams as LayoutParams
             layout.topMargin = (position * availableHeight).toInt()
             lblDate.layoutParams = layout
@@ -103,6 +108,7 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
     }
 
     private fun animateLeftMargin(start : Int, end : Int) {
+        lblDate.visibility = VISIBLE
         lblDate.clearAnimation()
         val animation = object : Animation() {
             override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
@@ -121,7 +127,7 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
         lblDate.startAnimation(animation)
     }
 
-    private fun getYearFoIndex(index : Int) : Int
+    private fun getYearForIndex(index : Int) : Int
     {
         for (offset in offsets ?: listOf()) {
             if (offset.cumulativeCount > index) {
@@ -148,17 +154,44 @@ class DateScroller(context: Context, attrs: AttributeSet?) : FrameLayout(context
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        if (event?.action == ACTION_DOWN)
+        if (event == null) {
+            return false
+        }
+
+        if (event.action == ACTION_DOWN)
         {
             touch = true
         }
-        else if (event?.action == ACTION_UP)
+        else if (event.action == ACTION_UP)
         {
             touch = false
             if (timeout) {
                 hideWithTimeout()
             }
         }
+
+        if (v == lblDate) {
+            if (event.action == ACTION_MOVE) {
+                gridView?.let {
+                    val locationArray = IntArray(2)
+                    getLocationOnScreen(locationArray)
+                    val availableHeight = height - paddingTop - paddingBottom - lblDate.height
+                    val rowCount = it.count / it.numColumns
+                    val totalHeight = rowCount * it.columnWidth
+
+                    val part = (event.rawY - locationArray[1] - paddingTop) / availableHeight
+                    val destinationOffset = (part * totalHeight).toInt()
+
+                    val currentPosition = (it.lastVisiblePosition + it.firstVisiblePosition) / 2.0
+                    val currentOffset = (currentPosition / it.count * totalHeight).toInt()
+
+                    it.scrollListBy(destinationOffset - currentOffset)
+                }
+            }
+
+            return true
+        }
+
         return false
     }
 
