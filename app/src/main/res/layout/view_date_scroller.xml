@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frmRoot"
     android:orientation="vertical"
-    android:layout_width="@dimen/date_button_width"
+    android:layout_width="@dimen/date_scroller_width"
     android:layout_height="match_parent"
     android:layout_marginRight="2dp"
     tools:ignore="RtlHardcoded">
@@ -18,5 +18,6 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:background="@drawable/background_white"
-        tools:ignore="RtlHardcoded"/>
+        tools:ignore="RtlHardcoded"
+        android:visibility="gone"/>
 </FrameLayout>

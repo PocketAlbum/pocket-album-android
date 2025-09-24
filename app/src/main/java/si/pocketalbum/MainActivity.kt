@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
         val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
         val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
-        dateScroller.albumLoaded(connection)
+        dateScroller.albumLoaded(connection, lstImages)
         slidingGallery.albumLoaded(connection)
 
         val adapter = ImagesAdapter(baseContext, connection)
