@@ -13,22 +13,34 @@
         android:id="@+id/lltDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="invisible"
+        android:orientation="horizontal"
+        android:visibility="visible"
         android:padding="5dp"
         style="@style/ImageTools">
-        <TextView
-            android:id="@+id/lblDateTime"
-            android:layout_width="wrap_content"
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="@dimen/button_large"
+            android:layout_height="@dimen/button_large"
+            android:src="@drawable/arrow_back_24"
+            android:background="@color/transparent"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/ImageTools.Label"
-            android:layout_margin="5dp"/>
-        <TextView
-            android:id="@+id/lblCoordinates"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/ImageTools"
-            android:layout_margin="5dp"/>
+            android:orientation="vertical"
+            android:padding="5dp">
+            <TextView
+                android:id="@+id/lblDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/ImageTools.Label"/>
+            <TextView
+                android:id="@+id/lblCoordinates"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/ImageTools"/>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

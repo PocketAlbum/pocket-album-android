@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Window
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.ShareCompat
@@ -39,6 +40,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
     private val lltActions : LinearLayout
     private val lblDateTime : TextView
     private val lblCoordinates : TextView
+    private val btnBack: ImageButton
     private val btnMap : Button
     private val btnInfo : Button
     private val btnShare : Button
@@ -51,6 +53,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         lltActions = findViewById(R.id.lltActions)
         lblDateTime = findViewById(R.id.lblDateTime)
         lblCoordinates = findViewById(R.id.lblCoordinates)
+        btnBack = findViewById(R.id.btnBack)
         btnMap = findViewById(R.id.btnMap)
         btnInfo = findViewById(R.id.btnInfo)
         btnShare = findViewById(R.id.btnShare)
@@ -78,6 +81,10 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
                 rightMargin = bars.right
             }
             WindowInsetsCompat.CONSUMED
+        }
+
+        btnBack.setOnClickListener {
+            visibility = GONE
         }
     }
 
