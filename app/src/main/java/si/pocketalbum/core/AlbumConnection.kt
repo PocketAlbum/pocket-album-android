@@ -11,6 +11,7 @@ import java.io.File
 
 class AlbumConnection(val album: IAlbum, var cache: ImageCache, val heatmaps: HeatmapCache) {
     val metadata = album.getMetadata()
+    val fileSize = if (album is SQLiteAlbum) album.fileSize else null
 
     companion object {
         fun open(context: Context, dbFile: File): AlbumConnection {

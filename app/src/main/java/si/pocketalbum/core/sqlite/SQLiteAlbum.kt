@@ -27,6 +27,8 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
     private val dbHelper = DatabaseHelper(context, file.absolutePath)
     private val db = dbHelper.writableDatabase
 
+    val fileSize = file.length()
+
     private val yearQuery = "CAST(substr(created, 1, 4) AS SIGNED) AS y"
     private val hourQuery = "CAST(substr(created, 12, 2) AS SIGNED) AS h"
 

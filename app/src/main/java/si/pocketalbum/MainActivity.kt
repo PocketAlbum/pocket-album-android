@@ -24,6 +24,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.services.AlbumService
+import si.pocketalbum.view.AlbumsPanel
 import si.pocketalbum.view.timeline.DateScroller
 import si.pocketalbum.view.ImagesAdapter
 import si.pocketalbum.view.search.SearchPanel
@@ -135,7 +136,9 @@ class MainActivity : ComponentActivity() {
 
         restoreSavedState(lstImages, slidingGallery)
 
+        val pnlAlbum = findViewById<AlbumsPanel>(R.id.pnlAlbums)
         val pnlSearch: SearchPanel = findViewById(R.id.pnlSearch)
+
         pnlSearch.setOnSearchListener {
             albumService.changeFilter(it)
             adapter.notifyDataSetChanged()
@@ -143,13 +146,25 @@ class MainActivity : ComponentActivity() {
             slidingGallery.loadAlbum()
         }
         pnlSearch.albumLoaded(albumService.getHeatmapCache())
+        pnlAlbum.showInfo(connection)
 
         findViewById<Button>(R.id.btnSearch).setOnClickListener {
             if (pnlSearch.visibility == VISIBLE) {
                 pnlSearch.visibility = GONE
             }
             else {
+                pnlAlbum.visibility = GONE
                 pnlSearch.visibility = VISIBLE
+            }
+        }
+
+        findViewById<Button>(R.id.btnAlbum).setOnClickListener {
+            if (pnlAlbum.visibility == VISIBLE) {
+                pnlAlbum.visibility = GONE
+            }
+            else {
+                pnlAlbum.visibility = VISIBLE
+                pnlSearch.visibility = GONE
             }
         }
     }

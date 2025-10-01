@@ -36,6 +36,16 @@
         app:layout_constraintBottom_toTopOf="@id/lltActions"
         android:visibility="gone"/>
 
+    <si.pocketalbum.view.AlbumsPanel
+        android:id="@+id/pnlAlbums"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_max="400dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/lltActions"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:id="@+id/lltActions"
         android:layout_width="match_parent"
