@@ -17,7 +17,7 @@
         android:layout_width="@dimen/date_button_width"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:background="@drawable/background_white"
+        android:background="@drawable/background_primary"
         tools:ignore="RtlHardcoded"
         android:visibility="gone"/>
 </FrameLayout>

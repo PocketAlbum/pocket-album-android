@@ -9,7 +9,7 @@
         <corners
             android:topLeftRadius="20dp"
             android:topRightRadius="20dp" />
-        <solid android:color="@color/white" />
+        <solid android:color="@color/background" />
         <padding
             android:left="14dp"
             android:top="8dp"
@@ -17,6 +17,6 @@
             android:bottom="8dp" />
         <stroke
             android:width="3dp"
-            android:color="@color/black" />
+            android:color="@color/text" />
     </shape>
 </inset>

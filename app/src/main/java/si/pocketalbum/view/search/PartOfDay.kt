@@ -62,7 +62,7 @@ class PartOfDay (context: Context, attrs: AttributeSet?) : FrameLayout(context, 
         return if (selected) {
             R.drawable.background_red
         } else {
-            R.drawable.background_white
+            R.drawable.background_primary
         }
     }
 }

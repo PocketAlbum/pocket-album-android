@@ -6,10 +6,10 @@
     android:insetBottom="-3dp">
     <shape
         android:shape="rectangle">
-        <solid android:color="@color/white" />
+        <solid android:color="@color/background" />
 
         <stroke
             android:width="3dp"
-            android:color="@color/black" />
+            android:color="@color/text" />
     </shape>
 </inset>
