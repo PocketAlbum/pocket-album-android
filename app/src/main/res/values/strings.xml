@@ -30,4 +30,5 @@
     <string name="night">Night</string>
     <string name="location_map">Location</string>
     <string name="zoom_in_message">Zoom in more to filter by location</string>
+    <string name="display_theme">Display theme</string>
 </resources>

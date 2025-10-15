@@ -18,17 +18,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.services.AlbumService
 import si.pocketalbum.view.AlbumsPanel
-import si.pocketalbum.view.timeline.DateScroller
 import si.pocketalbum.view.ImagesAdapter
-import si.pocketalbum.view.search.SearchPanel
+import si.pocketalbum.view.SettingsPanel
 import si.pocketalbum.view.SlidingGallery
+import si.pocketalbum.view.search.SearchPanel
+import si.pocketalbum.view.timeline.DateScroller
 
 class MainActivity : ComponentActivity() {
 
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
             albumService = binder.getService()
             serviceBound = true
 
-            CoroutineScope(Job() + Dispatchers.IO).launch {
+            lifecycleScope.launch {
                 try {
                     val con = albumService.getConnectionDeferred().await()
                     runOnUiThread {
@@ -137,8 +137,10 @@ class MainActivity : ComponentActivity() {
         restoreSavedState(lstImages, slidingGallery)
 
         val pnlAlbum = findViewById<AlbumsPanel>(R.id.pnlAlbums)
-        val pnlSearch: SearchPanel = findViewById(R.id.pnlSearch)
+        val pnlSearch = findViewById<SearchPanel>(R.id.pnlSearch)
+        val pnlSettings = findViewById<SettingsPanel>(R.id.pnlSettings)
 
+        pnlSettings.passLifecycleOwner(this)
         pnlSearch.setOnSearchListener {
             albumService.changeFilter(it)
             adapter.notifyDataSetChanged()
@@ -148,16 +150,6 @@ class MainActivity : ComponentActivity() {
         pnlSearch.albumLoaded(albumService.getHeatmapCache())
         pnlAlbum.showInfo(connection)
 
-        findViewById<Button>(R.id.btnSearch).setOnClickListener {
-            if (pnlSearch.visibility == VISIBLE) {
-                pnlSearch.visibility = GONE
-            }
-            else {
-                pnlAlbum.visibility = GONE
-                pnlSearch.visibility = VISIBLE
-            }
-        }
-
         findViewById<Button>(R.id.btnAlbum).setOnClickListener {
             if (pnlAlbum.visibility == VISIBLE) {
                 pnlAlbum.visibility = GONE
@@ -165,6 +157,29 @@ class MainActivity : ComponentActivity() {
             else {
                 pnlAlbum.visibility = VISIBLE
                 pnlSearch.visibility = GONE
+                pnlSettings.visibility = GONE
+            }
+        }
+
+        findViewById<Button>(R.id.btnSearch).setOnClickListener {
+            if (pnlSearch.visibility == VISIBLE) {
+                pnlSearch.visibility = GONE
+            }
+            else {
+                pnlAlbum.visibility = GONE
+                pnlSearch.visibility = VISIBLE
+                pnlSettings.visibility = GONE
+            }
+        }
+
+        findViewById<Button>(R.id.btnSettings).setOnClickListener {
+            if (pnlSettings.visibility == VISIBLE) {
+                pnlSettings.visibility = GONE
+            }
+            else {
+                pnlAlbum.visibility = GONE
+                pnlSearch.visibility = GONE
+                pnlSettings.visibility = VISIBLE
             }
         }
     }

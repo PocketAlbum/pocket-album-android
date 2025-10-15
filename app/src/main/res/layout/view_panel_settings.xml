@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background_primary_bottom"
+    android:padding="20dp">
+
+    <ImageButton
+        android:id="@+id/btnClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@drawable/close"
+        app:layout_constraintTop_toTopOf="@id/lblTitle"
+        app:layout_constraintBottom_toBottomOf="@id/lblTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/close"/>
+
+    <TextView
+        android:id="@+id/lblTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/PanelTitle"
+        android:text="@string/settings"/>
+
+    <TextView
+        android:id="@+id/lblPartOfDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/displayTheme"
+        app:layout_constraintBottom_toBottomOf="@id/displayTheme"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/PanelText"
+        android:text="@string/display_theme"/>
+
+    <si.pocketalbum.view.settings.DisplayTheme
+        android:id="@+id/displayTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lblTitle"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
