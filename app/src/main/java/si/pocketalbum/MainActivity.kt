@@ -7,6 +7,8 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.util.TypedValue
+import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Button
@@ -18,8 +20,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.services.AlbumService
@@ -75,9 +77,14 @@ class MainActivity : ComponentActivity() {
         val lstImages = findViewById<GridView>(R.id.lstImages)
         val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
 
-        lstImages.post {
-            val size = resources.getDimensionPixelSize(R.dimen.tile_size)
-            lstImages.numColumns = lstImages.width / size
+        lifecycleScope.launch {
+            dataStore.data
+                .map { prefs -> prefs[PreferencesKeys.THUMBNAIL_SIZE] ?: 80 }
+                .collect { size -> lstImages.post {
+                    val dm = resources.displayMetrics
+                    val size = TypedValue.applyDimension(COMPLEX_UNIT_DIP, size.toFloat(), dm)
+                    lstImages.numColumns = (lstImages.width / size).toInt()
+                }}
         }
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true)

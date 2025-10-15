@@ -3,6 +3,7 @@
 
     <style name="Theme.PocketAlbum" parent="Theme.AppCompat.DayNight">
         <item name="android:textColor">@color/text</item>
+        <item name="android:thumbTint">@color/text</item>
     </style>
 
     <style name="ImageTools">
