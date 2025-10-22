@@ -4,11 +4,10 @@
     <string name="share">Share</string>
     <string name="info">Info</string>
     <string name="close">Close</string>
-    <string name="file_name">File name: %1$s</string>
-    <string name="created_template">Created: %1$s</string>
-    <string name="location">Location: %1$s</string>
-    <string name="dimensions">Dimensions: %1$d × %2$d</string>
-    <string name="original_size">Original size: %1$s</string>
+    <string name="file_name">File name</string>
+    <string name="location">Location</string>
+    <string name="dimensions">Dimensions</string>
+    <string name="original_size">Original size</string>
     <string name="importDescription">To import an existing album, select the file ending with .sqlite and press Import.</string>
     <string name="import_action">Import</string>
     <string name="album_import">Album import</string>

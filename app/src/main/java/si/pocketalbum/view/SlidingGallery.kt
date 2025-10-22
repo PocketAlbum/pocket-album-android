@@ -1,5 +1,6 @@
 package si.pocketalbum.view
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -117,6 +118,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         })
     }
 
+    @SuppressLint("SetTextI18n")
     fun displayImageInfo(image: ImageInfo?) {
         if (image == null){
             lblDateTime.visibility = GONE
@@ -147,32 +149,22 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         }
 
         btnInfo.setOnClickListener {
-            val ctx = context
-            val dialog = Dialog(context, R.style.DialogWindowPrimary)
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setCancelable(false)
-            dialog.setContentView(R.layout.dialog_image_info)
+            val d = Dialog(context, R.style.DialogWindowPrimary)
+            d.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            d.setCancelable(false)
+            d.setContentView(R.layout.dialog_image_info)
 
-            dialog.findViewById<TextView>(R.id.lblFilename)
-                .text = ctx.getString(R.string.file_name, image.filename)
+            d.findViewById<TextView>(R.id.lblFilename).text = image.filename
+            d.findViewById<TextView>(R.id.lblDateTime).text = created
+            d.findViewById<TextView>(R.id.lblCoordinates).text = coordinates
+            d.findViewById<TextView>(R.id.lblDimensions).text = "${image.width} × ${image.height}"
+            d.findViewById<TextView>(R.id.lblOriginalSize).text = formatSize(image.size)
 
-            dialog.findViewById<TextView>(R.id.lblDateTime)
-                .text = ctx.getString(R.string.created_template, created)
-
-            dialog.findViewById<TextView>(R.id.lblCoordinates)
-                .text = ctx.getString(R.string.location, coordinates)
-
-            dialog.findViewById<TextView>(R.id.lblDimensions)
-                .text = ctx.getString(R.string.dimensions, image.width, image.height)
-
-            dialog.findViewById<TextView>(R.id.lblOriginalSize)
-                .text = ctx.getString(R.string.original_size, formatSize(image.size))
-
-            dialog.findViewById<TextView>(R.id.btnClose).setOnClickListener {
-                dialog.dismiss()
+            d.findViewById<ImageButton>(R.id.btnClose).setOnClickListener {
+                d.dismiss()
             }
 
-            dialog.show()
+            d.show()
         }
 
         btnShare.setOnClickListener {
