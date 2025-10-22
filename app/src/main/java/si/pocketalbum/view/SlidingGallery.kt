@@ -157,7 +157,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
                 .text = ctx.getString(R.string.file_name, image.filename)
 
             dialog.findViewById<TextView>(R.id.lblDateTime)
-                .text = ctx.getString(R.string.created, created)
+                .text = ctx.getString(R.string.created_template, created)
 
             dialog.findViewById<TextView>(R.id.lblCoordinates)
                 .text = ctx.getString(R.string.location, coordinates)

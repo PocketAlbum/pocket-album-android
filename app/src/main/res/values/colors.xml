@@ -10,6 +10,7 @@
 
     <color name="background">#FFFFFF</color>
     <color name="text">#111111</color>
+    <color name="textSecondary">#555</color>
 
     <color name="bluePrimary">#add8e6</color>
     <color name="blueDark">#71b5cc</color>

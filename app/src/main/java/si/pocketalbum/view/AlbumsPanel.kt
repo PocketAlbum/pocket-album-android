@@ -19,10 +19,8 @@ class AlbumsPanel (context: Context, attrs: AttributeSet?) : FrameLayout(context
 
     fun showInfo(connection: AlbumConnection)
     {
-        val albumView = findViewById<AlbumView>(R.id.albumView)
-        val name = connection.album.getMetadata().name
-        val size = connection.fileSize ?: 0
-        albumView.showInfo(Pair(name, size))
+        val albumView = findViewById<CurrentAlbum>(R.id.albumView)
+        albumView.showInfo(connection)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {

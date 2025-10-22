@@ -27,7 +27,7 @@
         style="@style/PanelTitle"
         android:text="@string/albums"/>
 
-    <si.pocketalbum.view.AlbumView
+    <si.pocketalbum.view.CurrentAlbum
         android:id="@+id/albumView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

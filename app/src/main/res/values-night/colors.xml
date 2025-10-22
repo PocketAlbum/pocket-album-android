@@ -2,6 +2,7 @@
 <resources>
     <color name="background">#333333</color>
     <color name="text">#EEEEEE</color>
+    <color name="textSecondary">#AAA</color>
 
     <color name="redPrimary">#cc4d43</color>
 

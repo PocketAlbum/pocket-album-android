@@ -31,6 +31,11 @@
         <item name="android:fontFamily">@font/fredoka_regular</item>
         <item name="android:textSize">16sp</item>
     </style>
+    <style name="PropertyText">
+        <item name="android:paddingVertical">8dp</item>
+        <item name="android:textColor">@color/textSecondary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
     <style name="TextWarning">
         <item name="android:fontFamily">@font/fredoka_medium</item>
         <item name="android:textSize">18sp</item>
