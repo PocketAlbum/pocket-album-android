@@ -21,6 +21,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import si.pocketalbum.core.AlbumConnection
@@ -49,7 +52,7 @@ class MainActivity : ComponentActivity() {
             albumService = binder.getService()
             serviceBound = true
 
-            lifecycleScope.launch {
+            CoroutineScope(Job() + Dispatchers.IO).launch {
                 try {
                     val con = albumService.getConnectionDeferred().await()
                     runOnUiThread {
