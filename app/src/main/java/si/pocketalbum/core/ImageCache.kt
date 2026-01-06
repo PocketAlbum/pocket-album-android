@@ -43,7 +43,7 @@ class ImageCache(private val album: IAlbum, private val filter: FilterModel) {
         try {
             val first = block * 100
             val last = ((block + 1) * 100) - 1
-            val images = album.getImages(filter, Interval(first.toLong(), last.toLong()))
+            val images = album.listThumbnails(filter, Interval(first.toLong(), last.toLong()))
             val result = HashMap<Int, ImageThumbnail>()
             for (i in 0 .. min(199, images.size - 1))
             {
@@ -67,12 +67,12 @@ class ImageCache(private val album: IAlbum, private val filter: FilterModel) {
 
     suspend fun getData(number: Int): Bitmap {
         val image = getImage(number)
-        val data = album.getData(image.imageInfo.id)
+        val data = album.getImageData(image.imageInfo.id)
         return BitmapFactory.decodeByteArray(data, 0, data.size)
     }
 
     fun getData(id: String): Bitmap {
-        val data = album.getData(id)
+        val data = album.getImageData(id)
         return BitmapFactory.decodeByteArray(data, 0, data.size)
     }
 }

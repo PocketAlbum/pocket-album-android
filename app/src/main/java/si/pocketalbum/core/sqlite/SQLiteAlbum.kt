@@ -65,6 +65,22 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         }
     }
 
+    override fun getImageInfo(id: String): ImageInfo {
+        val cursor = db.query("image",
+            arrayOf("id", "fileName", "contentType", "created", "width", "height", "size", "crc",
+            "latitude", "longitude"),
+            "Id = ?", arrayOf(id),
+            null, null, null, null)
+
+        cursor.use {
+            if (cursor.moveToFirst()) {
+                return convertImage(cursor)
+            } else {
+                throw IllegalArgumentException("Data for image id $id not found")
+            }
+        }
+    }
+
     private fun getWhere(filter: FilterModel): String {
         if (!filter.hasAny) {
             return "TRUE"
@@ -101,7 +117,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         return """${paging.from}, $count""";
     }
 
-    override fun getImages(filter: FilterModel, paging: Interval): List<ImageThumbnail> {
+    override fun listThumbnails(filter: FilterModel, paging: Interval): List<ImageThumbnail> {
         val cursor = db.query("image",
             arrayOf("id", "fileName", "contentType", "created", "width", "height", "size", "crc",
                 "latitude", "longitude", "thumbnail", yearQuery, hourQuery),
@@ -121,7 +137,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         return thumbnails
     }
 
-    override fun getData(id: String): ByteArray {
+    override fun getImageData(id: String): ByteArray {
         val cursor = db.query("image", arrayOf("data"),
             "Id = ?", arrayOf(id),
             null, null, null, null)
@@ -133,6 +149,38 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
                 throw IllegalArgumentException("Data for image id $id not found")
             }
         }
+    }
+
+    override fun getImageThumbnail(id: String): ByteArray {
+        val cursor = db.query("image", arrayOf("thumbnail"),
+            "Id = ?", arrayOf(id),
+            null, null, null, null)
+
+        cursor.use {
+            if (cursor.moveToFirst()) {
+                return cursor.getBlob(cursor.getColumnIndexOrThrow("thumbnail"))
+            } else {
+                throw IllegalArgumentException("Thumbnail for image id $id not found")
+            }
+        }
+    }
+
+    override fun list(filter: FilterModel, paging: Interval): List<ImageInfo> {
+        val cursor = db.query("image",
+            arrayOf("id", "fileName", "contentType", "created", "width", "height", "size", "crc",
+                "latitude", "longitude", yearQuery, hourQuery),
+            getWhere(filter), null,
+            null, null,
+            "created ASC",
+            getLimit(paging))
+
+        val infos = mutableListOf<ImageInfo>()
+        cursor.use {
+            while (cursor.moveToNext()) {
+                infos.add(convertImage(cursor))
+            }
+        }
+        return infos
     }
 
     override fun insert(image: ImageInfo, thumbnail: ByteArray, data: ByteArray) {

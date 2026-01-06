@@ -174,7 +174,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
             file.createNewFile()
 
             val fileStream = FileOutputStream(file)
-            fileStream.write(connection?.album?.getData(image.id))
+            fileStream.write(connection?.album?.getImageData(image.id))
             fileStream.close()
 
             val uri: Uri = getUriForFile(context, "si.pocketalbum", file)

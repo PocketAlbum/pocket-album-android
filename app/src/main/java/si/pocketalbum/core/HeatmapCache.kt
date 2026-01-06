@@ -91,10 +91,9 @@ class HeatmapCache(val album: IAlbum, val years: MutableMap<Int, Heatmap>) {
 
         val filter = FilterModel(Interval(year.toLong()), null, null)
         val info = album.getInfo(filter)
-        val images = album.getImages(filter, Interval(0, info.imageCount.toLong()))
+        val images = album.list(filter, Interval(0, info.imageCount.toLong()))
 
         val locations = images.stream()
-            .map { it.imageInfo }
             .filter { it.latitude != null && it.longitude != null }
             .map { LatLong(it.latitude!!, it.longitude!!) }
             .collect(Collectors.toList())

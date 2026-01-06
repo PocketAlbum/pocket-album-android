@@ -13,9 +13,15 @@ interface IAlbum {
 
     fun getInfo(filter: FilterModel): AlbumInfo
 
-    fun getData(id: String): ByteArray
+    fun getImageInfo(id: String): ImageInfo
 
-    fun getImages(filter: FilterModel, paging: Interval): List<ImageThumbnail>
+    fun getImageData(id: String): ByteArray
+
+    fun getImageThumbnail(id: String): ByteArray
+
+    fun list(filter: FilterModel, paging: Interval): List<ImageInfo>
+
+    fun listThumbnails(filter: FilterModel, paging: Interval): List<ImageThumbnail>
 
     fun imageExists(id: String): Boolean
 
