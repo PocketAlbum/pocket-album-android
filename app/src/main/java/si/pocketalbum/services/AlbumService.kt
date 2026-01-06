@@ -12,6 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.core.HeatmapCache
+import si.pocketalbum.core.IntegrityChecker
 import si.pocketalbum.core.models.FilterModel
 import java.io.File
 import java.io.FileNotFoundException
@@ -52,7 +53,10 @@ class AlbumService : Service() {
             }
             Log.i("AlbumService", "Opening local album.sqlite")
             val start = Instant.now()
+
             val connection = AlbumConnection.open(baseContext, dbFile)
+            IntegrityChecker.checkAllYears(connection.album)
+
             val end = Instant.now()
             val duration = Duration.between(start, end)
             Log.i("AlbumService", "Opened album in ${duration.toMillis()} ms")
