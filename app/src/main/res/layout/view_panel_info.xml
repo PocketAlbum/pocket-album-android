@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_primary"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background_primary_bottom"
     android:padding="20dp">
 
     <ImageButton
@@ -12,10 +13,22 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:src="@drawable/close"
-        android:layout_row="0"
-        android:layout_column="1"
+        app:layout_constraintTop_toTopOf="@id/lblTitle"
+        app:layout_constraintBottom_toBottomOf="@id/lblTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/close"
         android:layout_gravity="end"
-        android:contentDescription="@string/close"/>
+        android:layout_column="1"/>
+
+    <TextView
+        android:id="@+id/lblTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/PanelTitle"
+        android:text="@string/info"
+        android:layout_column="0"/>
 
     <TextView
         android:layout_width="wrap_content"

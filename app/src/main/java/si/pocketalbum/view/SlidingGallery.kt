@@ -1,13 +1,11 @@
 package si.pocketalbum.view
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
-import android.view.Window
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -17,6 +15,7 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -45,6 +44,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
     private val btnMap : Button
     private val btnInfo : Button
     private val btnShare : Button
+    private val pnlInfo: InfoPanel
     private var connection: AlbumConnection? = null
 
     init {
@@ -58,6 +58,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         btnMap = findViewById(R.id.btnMap)
         btnInfo = findViewById(R.id.btnInfo)
         btnShare = findViewById(R.id.btnShare)
+        pnlInfo = findViewById(R.id.pnlInfo)
 
         ViewCompat.setOnApplyWindowInsetsListener(lltActions) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -96,7 +97,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
 
     fun loadAlbum() {
         vpgImages.adapter = ImagesRecyclerAdapter(connection?.cache!!) {
-            val v = if (lltDetails.visibility == VISIBLE) INVISIBLE else VISIBLE
+            val v = if (lltDetails.isVisible && !pnlInfo.isVisible) INVISIBLE else VISIBLE
             lltDetails.visibility = v
             lltActions.visibility = v
         }
@@ -129,6 +130,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         val coordinates = formatCoordinates(image.latitude, image.longitude)
 
         lblDateTime.text = created
+        pnlInfo.showInfo(image)
 
         if (coordinates == null) {
             lblCoordinates.visibility = GONE
@@ -149,22 +151,7 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         }
 
         btnInfo.setOnClickListener {
-            val d = Dialog(context, R.style.DialogWindowPrimary)
-            d.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            d.setCancelable(false)
-            d.setContentView(R.layout.dialog_image_info)
-
-            d.findViewById<TextView>(R.id.lblFilename).text = image.filename
-            d.findViewById<TextView>(R.id.lblDateTime).text = created
-            d.findViewById<TextView>(R.id.lblCoordinates).text = coordinates
-            d.findViewById<TextView>(R.id.lblDimensions).text = "${image.width} × ${image.height}"
-            d.findViewById<TextView>(R.id.lblOriginalSize).text = formatSize(image.size)
-
-            d.findViewById<ImageButton>(R.id.btnClose).setOnClickListener {
-                d.dismiss()
-            }
-
-            d.show()
+            pnlInfo.visibility = if (pnlInfo.isVisible) GONE else VISIBLE
         }
 
         btnShare.setOnClickListener {
@@ -213,17 +200,11 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         return "$formattedLatitude $formattedLongitude"
     }
 
-    private fun formatSize(size: Long):String {
-        if (size > 1000000) {
-            return "%.1f MB".format(size / 1000000f)
-        } else if (size > 1000) {
-            return "%.1f kB".format(size / 1000f)
-        } else return "%d B".format(size)
-    }
-
     fun openImage(position: Int) {
         vpgImages.setCurrentItem(position, false)
         vpgImages.isUserInputEnabled = true
+        visibility = VISIBLE
+        pnlInfo.visibility = GONE
     }
 
     fun currentImage() : Int {

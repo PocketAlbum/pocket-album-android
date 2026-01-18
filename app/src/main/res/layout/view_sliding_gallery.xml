@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -15,6 +16,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="parent"
         android:padding="5dp"
         style="@style/ImageTools">
 
@@ -44,15 +46,25 @@
         </LinearLayout>
     </LinearLayout>
 
+    <si.pocketalbum.view.InfoPanel
+        android:id="@+id/pnlInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_max="400dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/lltActions"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <LinearLayout
         android:id="@+id/lltActions"
-        android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="3dp"
         android:background="@drawable/background_primary_top"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent">
         <Button
             android:id="@+id/btnMap"
             android:layout_width="0dp"
@@ -81,4 +93,4 @@
             style="@style/ButtonMenu"
             />
     </LinearLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

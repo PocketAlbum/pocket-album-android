@@ -138,7 +138,6 @@ class MainActivity : ComponentActivity() {
         val adapter = ImagesAdapter(baseContext, connection)
         lstImages.adapter = adapter
         lstImages.setOnItemClickListener { adapterView, view, i, l ->
-            slidingGallery.visibility = VISIBLE
             slidingGallery.openImage(i)
         }
         lstImages.setOnTouchListener(dateScroller)
@@ -200,10 +199,9 @@ class MainActivity : ComponentActivity() {
             val position = state.getInt(LAST_POSITION)
             lstImages.post{
                 lstImages.setSelection(position)
-                slidingGallery.openImage(position)
                 if (state.getBoolean(GALLERY_OPEN, false))
                 {
-                    slidingGallery.visibility = VISIBLE
+                    slidingGallery.openImage(position)
                 }
             }
         }
