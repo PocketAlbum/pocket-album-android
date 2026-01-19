@@ -14,6 +14,8 @@ import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.core.HeatmapCache
 import si.pocketalbum.core.IntegrityChecker
 import si.pocketalbum.core.models.FilterModel
+import si.pocketalbum.streaming.AlbumCaster
+import si.pocketalbum.streaming.AlbumStreamer
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.Duration
@@ -23,6 +25,9 @@ class AlbumService : Service() {
     private val binder = LocalBinder()
 
     private var deferredConnection: Deferred<AlbumConnection>? = null
+
+    private var streamer = AlbumStreamer(this)
+    lateinit var caster: AlbumCaster
 
     inner class LocalBinder : Binder() {
         fun getService(): AlbumService = this@AlbumService
@@ -35,7 +40,7 @@ class AlbumService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i("AlbumService", "Creating service")
-
+        caster = AlbumCaster(applicationContext, streamer)
         loadAlbumAsync()
     }
 

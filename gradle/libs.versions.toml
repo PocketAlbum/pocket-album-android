@@ -10,6 +10,8 @@ kotlinxSerializationJson = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2025.04.00"
+nanohttpd = "2.3.1"
+playServicesCastFramework = "22.2.0"
 viewpager2 = "1.1.0"
 constraintlayout = "2.2.1"
 jetbrainsKotlinJvm = "1.9.0"
@@ -39,6 +41,8 @@ mapsforge = { group = "org.mapsforge", name = "mapsforge-map-android", version =
 caverock = { group = "com.caverock", name = "androidsvg", version = "1.4" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version = "1.10.1"}
 androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version = "1.8.6"}
+nanohttpd = { module = "org.nanohttpd:nanohttpd", version.ref = "nanohttpd" }
+play-services-cast-framework = { module = "com.google.android.gms:play-services-cast-framework", version.ref = "playServicesCastFramework" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

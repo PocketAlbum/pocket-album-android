@@ -36,6 +36,9 @@
         </provider>
         <service android:name=".services.AlbumService"
             android:configChanges="keyboardHidden|orientation"/>
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="si.pocketalbum.streaming.CastOptionsProvider" />
 </application>
 
 </manifest>

@@ -78,4 +78,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.cbor)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.nanohttpd)
+    implementation(libs.play.services.cast.framework)
 }

@@ -14,12 +14,12 @@ import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.GridView
 import android.widget.LinearLayout
-import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +35,7 @@ import si.pocketalbum.view.SlidingGallery
 import si.pocketalbum.view.search.SearchPanel
 import si.pocketalbum.view.timeline.DateScroller
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     companion object {
         const val LAST_POSITION = "LAST_POSITION"
@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
         val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
         dateScroller.albumLoaded(connection, lstImages)
-        slidingGallery.albumLoaded(connection)
+        slidingGallery.albumLoaded(connection, albumService)
 
         val adapter = ImagesAdapter(baseContext, connection)
         lstImages.adapter = adapter

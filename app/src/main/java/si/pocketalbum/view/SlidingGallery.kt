@@ -17,8 +17,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.mediarouter.app.MediaRouteButton
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.google.android.gms.cast.framework.CastButtonFactory
+import com.google.android.gms.cast.framework.CastContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,6 +29,7 @@ import kotlinx.coroutines.launch
 import si.pocketalbum.R
 import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.core.models.ImageInfo
+import si.pocketalbum.services.AlbumService
 import java.io.File
 import java.io.FileOutputStream
 import java.time.LocalDateTime
@@ -45,7 +49,10 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
     private val btnInfo : Button
     private val btnShare : Button
     private val pnlInfo: InfoPanel
+    private val btnCast : MediaRouteButton
+    private val pnlCast: LinearLayout
     private var connection: AlbumConnection? = null
+    private var service: AlbumService? = null
 
     init {
         inflate(context, R.layout.view_sliding_gallery, this)
@@ -59,6 +66,8 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         btnInfo = findViewById(R.id.btnInfo)
         btnShare = findViewById(R.id.btnShare)
         pnlInfo = findViewById(R.id.pnlInfo)
+        btnCast = findViewById(R.id.btnCast)
+        pnlCast = findViewById(R.id.pnlCast)
 
         ViewCompat.setOnApplyWindowInsetsListener(lltActions) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -88,10 +97,17 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         btnBack.setOnClickListener {
             visibility = GONE
         }
+
+        pnlCast.setOnClickListener {
+            btnCast.performClick()
+        }
+
+        CastButtonFactory.setUpMediaRouteButton(context, btnCast)
     }
 
-    fun albumLoaded(connection: AlbumConnection) {
+    fun albumLoaded(connection: AlbumConnection, service: AlbumService) {
         this.connection = connection
+        this.service = service
         loadAlbum()
     }
 
@@ -172,6 +188,8 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
                 .setSubject("Shared image")
                 .startChooser()
         }
+
+        service?.caster?.castPhoto(image)
     }
 
     private fun formatDataTime(isoDateTime: String): String {
