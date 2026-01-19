@@ -34,6 +34,7 @@ import si.pocketalbum.view.SettingsPanel
 import si.pocketalbum.view.SlidingGallery
 import si.pocketalbum.view.search.SearchPanel
 import si.pocketalbum.view.timeline.DateScroller
+import androidx.core.view.isVisible
 
 class MainActivity : FragmentActivity() {
 
@@ -93,8 +94,9 @@ class MainActivity : FragmentActivity() {
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true)
         {
             override fun handleOnBackPressed() {
-                if (slidingGallery.visibility == VISIBLE)
+                if (slidingGallery.isVisible)
                 {
+                    slidingGallery.setImmersive(false, window)
                     slidingGallery.visibility = GONE
                 }
                 else finish()
@@ -133,7 +135,7 @@ class MainActivity : FragmentActivity() {
         val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
         dateScroller.albumLoaded(connection, lstImages)
-        slidingGallery.albumLoaded(connection, albumService)
+        slidingGallery.albumLoaded(window, connection, albumService)
 
         val adapter = ImagesAdapter(baseContext, connection)
         lstImages.adapter = adapter
@@ -154,7 +156,7 @@ class MainActivity : FragmentActivity() {
             albumService.changeFilter(it)
             adapter.notifyDataSetChanged()
             dateScroller.loadAlbum()
-            slidingGallery.loadAlbum()
+            slidingGallery.loadAlbum(window)
         }
         pnlSearch.albumLoaded(albumService.getHeatmapCache())
         pnlAlbum.showInfo(connection)

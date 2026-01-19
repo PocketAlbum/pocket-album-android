@@ -6,14 +6,18 @@ import android.content.Intent
 import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
+import android.view.View
+import android.view.Window
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -21,7 +25,6 @@ import androidx.mediarouter.app.MediaRouteButton
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.gms.cast.framework.CastButtonFactory
-import com.google.android.gms.cast.framework.CastContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -105,17 +108,32 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         CastButtonFactory.setUpMediaRouteButton(context, btnCast)
     }
 
-    fun albumLoaded(connection: AlbumConnection, service: AlbumService) {
+    fun albumLoaded(window: Window, connection: AlbumConnection, service: AlbumService) {
         this.connection = connection
         this.service = service
-        loadAlbum()
+        loadAlbum(window)
     }
 
-    fun loadAlbum() {
+    fun View.fadeOut(duration: Long = 300) {
+        animate()
+            .alpha(0f)
+            .setDuration(duration)
+            .withEndAction {
+                visibility = GONE
+            }
+    }
+
+    fun View.fadeIn(duration: Long = 300) {
+        alpha = 0f
+        visibility = VISIBLE
+        animate()
+            .alpha(1f)
+            .setDuration(duration)
+    }
+
+    fun loadAlbum(window: Window) {
         vpgImages.adapter = ImagesRecyclerAdapter(connection?.cache!!) {
-            val v = if (lltDetails.isVisible && !pnlInfo.isVisible) INVISIBLE else VISIBLE
-            lltDetails.visibility = v
-            lltActions.visibility = v
+            setImmersive(lltDetails.isVisible && !pnlInfo.isVisible, window)
         }
         vpgImages.registerOnPageChangeCallback(object : OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {
@@ -133,6 +151,38 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
                 }
             }
         })
+    }
+
+    fun setImmersive(immersive: Boolean, window: Window)
+    {
+        val windowInsetsController =
+            WindowCompat.getInsetsController(window, window.decorView)
+        val lp = vpgImages.layoutParams as ConstraintLayout.LayoutParams
+
+        if (immersive) {
+            lltActions.fadeOut(300)
+            lltDetails.fadeOut(300)
+
+            windowInsetsController.hide(WindowInsetsCompat.Type.statusBars())
+            val offset = (lltDetails.bottom - (rootView.height - lltActions.top))
+
+            lp.topToTop = R.id.pnlRoot
+            lp.bottomToTop = ConstraintLayout.LayoutParams.UNSET
+            lp.height = rootView.height + offset
+        }
+        else {
+            lltActions.fadeIn(300)
+            lltDetails.fadeIn(300)
+
+            windowInsetsController.show(WindowInsetsCompat.Type.statusBars())
+
+            lp.topToBottom = R.id.lltDetails
+            lp.topToTop = ConstraintLayout.LayoutParams.UNSET
+            lp.bottomToTop = R.id.lltActions
+            lp.bottomToBottom = ConstraintLayout.LayoutParams.UNSET
+            lp.height = 0
+        }
+        vpgImages.setLayoutParams(lp)
     }
 
     @SuppressLint("SetTextI18n")
