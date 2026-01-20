@@ -10,11 +10,14 @@ import android.os.IBinder
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -90,6 +93,21 @@ class ImportActivity : ComponentActivity() {
                 albumView.clearInfo()
                 btnImport.isEnabled = false
             }
+        }
+
+        val pnlRoot = findViewById<LinearLayout>(R.id.pnlRoot)
+        ViewCompat.setOnApplyWindowInsetsListener(pnlRoot) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                WindowInsetsCompat.Type.displayCutout()
+            )
+            v.setPadding(
+                v.paddingLeft + bars.left,
+                v.paddingTop + bars.top,
+                v.paddingRight + bars.right,
+                v.paddingBottom + bars.bottom
+            )
+            WindowInsetsCompat.CONSUMED
         }
     }
 
