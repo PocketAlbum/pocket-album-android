@@ -1,10 +1,6 @@
 package si.pocketalbum.core
 
 import android.content.Context
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.sqlite.SQLiteAlbum
 import java.io.File
@@ -21,9 +17,7 @@ class AlbumConnection(val album: IAlbum, var cache: ImageCache, val heatmaps: He
 
             val connection = AlbumConnection(album, cache, heatmaps)
             connection.metadata.validate()
-            CoroutineScope(Job() + Dispatchers.IO).launch {
-                heatmaps.build(context)
-            }
+
             return connection
         }
     }
@@ -34,5 +28,10 @@ class AlbumConnection(val album: IAlbum, var cache: ImageCache, val heatmaps: He
 
     fun changeFilter(newFilter: FilterModel) {
         cache = ImageCache(album, newFilter)
+    }
+
+    fun buildHeatmaps(context: Context)
+    {
+        heatmaps.build(context)
     }
 }

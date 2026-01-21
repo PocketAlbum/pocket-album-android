@@ -27,10 +27,11 @@
         style="@style/PanelTitle"
         android:text="@string/albums"/>
 
-    <si.pocketalbum.view.CurrentAlbum
-        android:id="@+id/albumView"
+    <ListView
+        android:id="@+id/lstAlbums"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/btnClose" />
+        android:layout_height="250dp"
+        android:layout_marginTop="@dimen/margin_regular"
+        app:layout_constraintTop_toBottomOf="@id/btnClose"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

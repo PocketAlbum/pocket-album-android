@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import si.pocketalbum.PreferencesKeys
@@ -38,6 +39,14 @@ class SettingsPanel (context: Context, attrs: AttributeSet?) : FrameLayout(conte
 
     fun passLifecycleOwner(owner: LifecycleOwner) {
         displayTheme.passLifecycleOwner(owner)
+
+        owner.lifecycleScope.launch {
+            context.dataStore.data
+                .map { p -> p[PreferencesKeys.THUMBNAIL_SIZE] ?: 80 }
+                .collect { size -> skbThumbnailSize.post {
+                    skbThumbnailSize.progress = size
+                }}
+        }
 
         skbThumbnailSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener
         {

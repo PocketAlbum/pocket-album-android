@@ -5,10 +5,11 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ListView
 import si.pocketalbum.R
-import si.pocketalbum.core.AlbumConnection
+import si.pocketalbum.services.AlbumService
 
-class AlbumsPanel (context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
+class AlbumsPanel (ctx: Context, attrs: AttributeSet?) : FrameLayout(ctx, attrs) {
     init {
         inflate(context, R.layout.view_panel_albums, this)
 
@@ -17,10 +18,16 @@ class AlbumsPanel (context: Context, attrs: AttributeSet?) : FrameLayout(context
         }
     }
 
-    fun showInfo(connection: AlbumConnection)
+    fun showInfo(service: AlbumService)
     {
-        val albumView = findViewById<CurrentAlbum>(R.id.albumView)
-        albumView.showInfo(connection)
+        val lstAlbums = findViewById<ListView>(R.id.lstAlbums)
+        val adapter = AlbumsAdapter(context, service.getAlbums())
+        lstAlbums.adapter = adapter
+
+        lstAlbums.setOnItemClickListener { adapterView, view, i, l ->
+            val locator = adapter.getItem(i)
+            service.loadAlbumAsync(locator)
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {

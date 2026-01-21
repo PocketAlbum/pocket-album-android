@@ -12,6 +12,8 @@ import kotlinx.coroutines.async
 import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.models.ImageThumbnail
 import si.pocketalbum.core.models.Interval
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import kotlin.math.min
 
 class ImageCache(private val album: IAlbum, private val filter: FilterModel) {
@@ -41,6 +43,8 @@ class ImageCache(private val album: IAlbum, private val filter: FilterModel) {
     private fun loadImages(block: Int): HashMap<Int, ImageThumbnail>
     {
         try {
+            val start = Instant.now()
+
             val first = block * 100
             val last = ((block + 1) * 100) - 1
             val images = album.listThumbnails(filter, Interval(first.toLong(), last.toLong()))
@@ -49,6 +53,11 @@ class ImageCache(private val album: IAlbum, private val filter: FilterModel) {
             {
                 result[i + first] = images[i]
             }
+
+            val end = Instant.now()
+            val time = start.until(end, ChronoUnit.MILLIS)
+            Log.i("ImageCache", "Loaded block $block in ${time} ms")
+
             return result
         }
         catch (e: Exception) {

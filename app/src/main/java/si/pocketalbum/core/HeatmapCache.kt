@@ -32,7 +32,9 @@ class HeatmapCache(val album: IAlbum, val years: MutableMap<Int, Heatmap>) {
     companion object {
         fun load(album: IAlbum, context: Context): HeatmapCache {
             val id = album.getMetadata().id
-            val cacheFile = File(context.cacheDir, "$id-heatmap.cbor")
+            val heatmapsDir = File(context.cacheDir, "heatmaps")
+            heatmapsDir.mkdirs()
+            val cacheFile = File(heatmapsDir, "$id.cbor")
             var cache = mutableMapOf<Int, Heatmap>()
             try {
                 val array = cacheFile.readBytes()
@@ -48,7 +50,7 @@ class HeatmapCache(val album: IAlbum, val years: MutableMap<Int, Heatmap>) {
                     .toMutableMap()
             }
             catch (e: Exception) {
-                Log.e("HeatmapCache", "Unable to load heatmap cache", e)
+                Log.w("HeatmapCache", "Unable to load heatmap cache", e)
             }
             Log.i("HeatmapCache", "Initializing cache with valid ${cache.size} years")
             return HeatmapCache(album, cache)
@@ -77,7 +79,9 @@ class HeatmapCache(val album: IAlbum, val years: MutableMap<Int, Heatmap>) {
 
     fun save(context: Context, yearIndex: List<YearIndex>) {
         val id = album.getMetadata().id
-        val cacheFile = File(context.cacheDir, "$id-heatmap.cbor")
+        val heatmapsDir = File(context.cacheDir, "heatmaps")
+        heatmapsDir.mkdirs()
+        val cacheFile = File(heatmapsDir, "$id.cbor")
         val cacheList = yearIndex
             .filter { years.containsKey(it.year) }
             .map { YearHeatmap(it.year, it.crc, years.get(it.year)!!) }
