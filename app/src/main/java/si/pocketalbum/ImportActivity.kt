@@ -25,9 +25,6 @@ import kotlinx.coroutines.launch
 import si.pocketalbum.core.sqlite.SQLiteAlbum
 import si.pocketalbum.services.AlbumService
 import si.pocketalbum.view.AlbumView
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 
 class ImportActivity : ComponentActivity() {
     private lateinit var getContent: ActivityResultLauncher<String>
@@ -78,7 +75,7 @@ class ImportActivity : ComponentActivity() {
                     btnImport.isEnabled = false
                     btnImport.text = getString(R.string.importing)
                     btnSelectFile.visibility = View.GONE
-                    importAlbum(uri, nameAndSize.second)
+                    importAlbum(uri)
                 }
             }
             catch (e: Exception) {
@@ -111,14 +108,16 @@ class ImportActivity : ComponentActivity() {
         }
     }
 
-    private fun importAlbum(uri: Uri, size: Long) {
+    private fun importAlbum(uri: Uri) {
         try {
-            prgImport.max = (size / 1024).toInt()
-            prgImport.progress = 0
             CoroutineScope(Job() + Dispatchers.IO).launch {
-                copyUriToFile(baseContext, uri)
+                val locator = albumService!!.import(uri) {
+                    runOnUiThread {
+                        prgImport.progress = (it * 1000).toInt()
+                    }
+                }
                 runOnUiThread {
-                    albumService!!.loadAlbumAsync()
+                    albumService!!.loadAlbumAsync(locator)
                     finish()
                 }
             }
@@ -126,24 +125,5 @@ class ImportActivity : ComponentActivity() {
         catch (e: Exception) {
             Log.e("ImportActivity", "Unable to import album", e)
         }
-    }
-
-    private fun copyUriToFile(context: Context, uri: Uri) {
-        context.contentResolver.openInputStream(uri)?.use {
-            val destinationFile = File(context.filesDir, "album.sqlite")
-
-            FileOutputStream(destinationFile).use { outputStream ->
-                val buffer = ByteArray(1024)
-                var bytesRead: Int
-                while (it.read(buffer).also { bytesRead = it } != -1) {
-                    outputStream.write(buffer, 0, bytesRead)
-                    runOnUiThread {
-                        prgImport.progress++
-                    }
-                }
-                outputStream.flush()
-            }
-        }
-        throw IOException("Unable to open file from $uri")
     }
 }

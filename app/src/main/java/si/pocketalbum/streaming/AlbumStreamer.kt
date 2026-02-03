@@ -15,7 +15,7 @@ class AlbumStreamer(
         try {
             val connection: AlbumConnection
             try {
-                connection = service.getConnectionDeferred().getCompleted()
+                connection = service.openedAlbum.value!!.getCompleted()
             } catch (e: Exception) {
                 return newFixedLengthResponse(
                     Response.Status.NOT_FOUND, "text/plain",

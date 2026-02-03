@@ -17,7 +17,17 @@
         android:stretchMode="columnWidth"
         android:scrollbars="none"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/lltActions" />
+        app:layout_constraintBottom_toTopOf="@id/lltActions"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/prgProgress"
+        android:layout_width="@dimen/tile_size"
+        android:layout_height="@dimen/tile_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/lltActions"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <si.pocketalbum.view.timeline.DateScroller
         android:id="@+id/dateScroller"

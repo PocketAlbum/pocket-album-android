@@ -14,6 +14,7 @@ import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.GridView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
@@ -35,6 +36,7 @@ import si.pocketalbum.view.SlidingGallery
 import si.pocketalbum.view.search.SearchPanel
 import si.pocketalbum.view.timeline.DateScroller
 import androidx.core.view.isVisible
+import kotlinx.coroutines.Deferred
 
 class MainActivity : FragmentActivity() {
 
@@ -44,6 +46,9 @@ class MainActivity : FragmentActivity() {
     }
 
     private lateinit var albumService: AlbumService
+    private lateinit var lstImages: GridView
+    private lateinit var slidingGallery: SlidingGallery
+    private lateinit var prgProgress: ProgressBar
     private var serviceBound: Boolean = false
     private var savedInstanceState: Bundle? = null
 
@@ -53,16 +58,11 @@ class MainActivity : FragmentActivity() {
             albumService = binder.getService()
             serviceBound = true
 
-            CoroutineScope(Job() + Dispatchers.IO).launch {
-                try {
-                    val con = albumService.getConnectionDeferred().await()
-                    runOnUiThread {
-                        albumLoaded(con)
+            lifecycleScope.launch {
+                albumService.openedAlbum.collect { connection ->
+                    if (connection != null) {
+                        openAlbum(connection)
                     }
-                }
-                catch (e: Exception) {
-                    Log.e("MainActivity", "Failed to load album", e)
-                    startActivity(Intent(baseContext, ImportActivity::class.java))
                 }
             }
         }
@@ -78,18 +78,9 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        val lstImages = findViewById<GridView>(R.id.lstImages)
-        val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
-
-        lifecycleScope.launch {
-            dataStore.data
-                .map { prefs -> prefs[PreferencesKeys.THUMBNAIL_SIZE] ?: 80 }
-                .collect { size -> lstImages.post {
-                    val dm = resources.displayMetrics
-                    val size = TypedValue.applyDimension(COMPLEX_UNIT_DIP, size.toFloat(), dm)
-                    lstImages.numColumns = (lstImages.width / size).toInt()
-                }}
-        }
+        lstImages = findViewById<GridView>(R.id.lstImages)
+        slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
+        prgProgress = findViewById<ProgressBar>(R.id.prgProgress)
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true)
         {
@@ -129,9 +120,40 @@ class MainActivity : FragmentActivity() {
         serviceBound = false
     }
 
+    private fun openAlbum(connection: Deferred<AlbumConnection>)
+    {
+        slidingGallery.setImmersive(false, window)
+        slidingGallery.visibility = GONE
+        lstImages.visibility = GONE
+        prgProgress.visibility = VISIBLE
+
+        CoroutineScope(Job() + Dispatchers.IO).launch {
+            try {
+                val con = connection.await()
+                runOnUiThread {
+                    prgProgress.visibility = GONE
+                    lstImages.visibility = VISIBLE
+                    albumLoaded(con)
+                }
+            }
+            catch (e: Exception) {
+                Log.e("MainActivity", "Failed to load album", e)
+                startActivity(Intent(baseContext, ImportActivity::class.java))
+            }
+        }
+    }
+
     fun albumLoaded(connection: AlbumConnection) {
-        val lstImages = findViewById<GridView>(R.id.lstImages)
-        val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
+        lifecycleScope.launch {
+            dataStore.data
+                .map { prefs -> prefs[PreferencesKeys.THUMBNAIL_SIZE] ?: 80 }
+                .collect { size -> lstImages.post {
+                    val dm = resources.displayMetrics
+                    val size = TypedValue.applyDimension(COMPLEX_UNIT_DIP, size.toFloat(), dm)
+                    lstImages.numColumns = (lstImages.width / size).toInt()
+                }}
+        }
+
         val dateScroller = findViewById<DateScroller>(R.id.dateScroller)
 
         dateScroller.albumLoaded(connection, lstImages)
@@ -159,10 +181,10 @@ class MainActivity : FragmentActivity() {
             slidingGallery.loadAlbum(window)
         }
         pnlSearch.albumLoaded(albumService.getHeatmapCache())
-        pnlAlbum.showInfo(connection)
+        pnlAlbum.showInfo(albumService)
 
         findViewById<Button>(R.id.btnAlbum).setOnClickListener {
-            if (pnlAlbum.visibility == VISIBLE) {
+            if (pnlAlbum.isVisible) {
                 pnlAlbum.visibility = GONE
             }
             else {
@@ -173,7 +195,7 @@ class MainActivity : FragmentActivity() {
         }
 
         findViewById<Button>(R.id.btnSearch).setOnClickListener {
-            if (pnlSearch.visibility == VISIBLE) {
+            if (pnlSearch.isVisible) {
                 pnlSearch.visibility = GONE
             }
             else {
@@ -184,7 +206,7 @@ class MainActivity : FragmentActivity() {
         }
 
         findViewById<Button>(R.id.btnSettings).setOnClickListener {
-            if (pnlSettings.visibility == VISIBLE) {
+            if (pnlSettings.isVisible) {
                 pnlSettings.visibility = GONE
             }
             else {
@@ -213,7 +235,7 @@ class MainActivity : FragmentActivity() {
         val lstImages = findViewById<GridView>(R.id.lstImages)
         val slidingGallery = findViewById<SlidingGallery>(R.id.slidingGallery)
 
-        val galleryOpen = slidingGallery.visibility == VISIBLE
+        val galleryOpen = slidingGallery.isVisible
 
         outState.putBoolean(GALLERY_OPEN, galleryOpen)
         if (galleryOpen) {

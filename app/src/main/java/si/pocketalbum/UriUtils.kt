@@ -5,6 +5,8 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import java.io.File
+import java.io.FileOutputStream
 
 /**
  * References:
@@ -72,5 +74,23 @@ object UriUtils {
         // We tried querying the ContentResolver...didn't work out
         // Try extracting the last path segment
         return Pair(displayName ?: contentUri.lastPathSegment, size)
+    }
+
+    fun copyFile(ctx: Context, uri: Uri, destination: File, progress: (Double) -> Unit)
+    {
+        ctx.contentResolver.openInputStream(uri)?.use {
+            val nameAndSize = getDisplayNameSize(ctx, uri)
+            FileOutputStream(destination).use { outputStream ->
+                val buffer = ByteArray(1024 * 1024)
+                var bytesRead: Int
+                var totalBytes = 0
+                while (it.read(buffer).also { bytesRead = it } != -1) {
+                    outputStream.write(buffer, 0, bytesRead)
+                    totalBytes += bytesRead
+                    progress(totalBytes.toDouble() / nameAndSize.second)
+                }
+                outputStream.flush()
+            }
+        }
     }
 }
