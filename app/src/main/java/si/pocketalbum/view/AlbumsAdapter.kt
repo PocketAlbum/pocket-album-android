@@ -21,17 +21,22 @@ class AlbumsAdapter(context: Context,
 {
     private val inflater = LayoutInflater.from(context)
 
-    override fun getCount(): Int = albums.size
+    override fun getCount(): Int = albums.size + 1
 
     override fun getItem(position: Int): AlbumLocator = albums[position]
 
-    override fun getItemId(position: Int): Long = 0
+    override fun getItemId(position: Int): Long = if (position < albums.size) 0 else 1
 
     override fun getView(
         position: Int,
         convertView: View?,
         parent: ViewGroup?
     ): View? {
+        if (position == albums.size)
+        {
+            return convertView ?: inflater.inflate(R.layout.view_album_add, null)
+        }
+
         var view = convertView ?: inflater.inflate(R.layout.view_album_view, null)
         val lblFilename = view.findViewById<TextView>(R.id.lblFilename)
 

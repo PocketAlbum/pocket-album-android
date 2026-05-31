@@ -23,7 +23,8 @@
             android:layout_marginBottom="-8dp"
             android:textColor="#0C0"
             android:text="●"
-            tools:ignore="HardcodedText" />
+            tools:ignore="HardcodedText"
+            android:visibility="gone"/>
     </FrameLayout>
     <LinearLayout
         android:layout_width="wrap_content"

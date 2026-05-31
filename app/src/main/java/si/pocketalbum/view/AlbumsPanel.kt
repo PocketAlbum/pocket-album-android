@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ListView
+import si.pocketalbum.ImportActivity
 import si.pocketalbum.R
 import si.pocketalbum.StatisticsActivity
 import si.pocketalbum.core.AlbumConnection
@@ -31,16 +32,23 @@ class AlbumsPanel (ctx: Context, attrs: AttributeSet?) : FrameLayout(ctx, attrs)
         lstAlbums.adapter = adapter
 
         lstAlbums.setOnItemClickListener { adapterView, view, i, l ->
-            val locator = adapter.getItem(i)
-            val opened = locator.guid == openedAlbum.metadata.id
-
-            if (opened) {
-                val intent = Intent(context, StatisticsActivity::class.java)
+            if (i == adapter.count - 1)
+            {
+                val intent = Intent(context, ImportActivity::class.java)
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent)
             }
             else {
-                service.loadAlbumAsync(locator)
+                val locator = adapter.getItem(i)
+                val opened = locator.guid == openedAlbum.metadata.id
+
+                if (opened) {
+                    val intent = Intent(context, StatisticsActivity::class.java)
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent)
+                } else {
+                    service.loadAlbumAsync(locator)
+                }
             }
         }
     }
