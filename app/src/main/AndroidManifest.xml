@@ -25,6 +25,9 @@
         <activity
             android:name=".ImportActivity"
             android:theme="@style/Theme.PocketAlbum"/>
+        <activity
+            android:name=".StatisticsActivity"
+            android:theme="@style/Theme.PocketAlbum"/>
         <provider
             android:authorities="si.pocketalbum"
             android:name=".ImageProvider"

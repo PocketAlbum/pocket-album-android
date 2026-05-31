@@ -181,7 +181,7 @@ class MainActivity : FragmentActivity() {
             slidingGallery.loadAlbum(window)
         }
         pnlSearch.albumLoaded(albumService.getHeatmapCache())
-        pnlAlbum.showInfo(albumService)
+        pnlAlbum.showInfo(albumService, connection)
 
         findViewById<Button>(R.id.btnAlbum).setOnClickListener {
             if (pnlAlbum.isVisible) {

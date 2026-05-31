@@ -30,14 +30,14 @@ class AlbumView(context: Context, attrs: AttributeSet?) : FrameLayout(context, a
         lblSize.visibility = GONE
     }
 
-    private fun formatSize(bytes: Long): String {
-        if (bytes < 1000) return "$bytes B"
+}
 
-        val units = arrayOf("B", "KB", "MB", "GB", "TB", "PB", "EB")
-        val exponent = (ln(bytes.toDouble()) / ln(1000.0)).toInt()
-        val formattedSize = bytes / 1000.0.pow(exponent.toDouble())
+fun formatSize(bytes: Long, decimalPlaces: Int = 2): String {
+    if (bytes < 1000) return "$bytes B"
 
-        return String.format(Locale.getDefault(), "%.2f %s", formattedSize, units[exponent])
-    }
+    val units = arrayOf("B", "KB", "MB", "GB", "TB", "PB", "EB")
+    val exponent = (ln(bytes.toDouble()) / ln(1000.0)).toInt()
+    val formattedSize = bytes / 1000.0.pow(exponent.toDouble())
 
+    return String.format(Locale.getDefault(), "%.${decimalPlaces}f %s", formattedSize, units[exponent])
 }
