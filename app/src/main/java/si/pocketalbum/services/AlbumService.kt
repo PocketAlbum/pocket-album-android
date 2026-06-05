@@ -14,6 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okio.IOException
 import si.pocketalbum.UriUtils
 import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.core.AlbumIndex
@@ -25,6 +26,7 @@ import si.pocketalbum.streaming.AlbumCaster
 import si.pocketalbum.streaming.AlbumStreamer
 import java.io.File
 import java.io.FileNotFoundException
+import java.nio.file.Files
 import java.time.Duration
 import java.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -148,5 +150,18 @@ class AlbumService : Service() {
         finally {
             tempFile?.delete()
         }
+    }
+
+    fun deleteAlbum(album: AlbumLocator) {
+        try {
+            Files.delete(File(album.uri).toPath())
+            index.deleteAlbum(album)
+        }
+        catch (e: Exception)
+        {
+            throw IOException("Failed to delete album ${album.name}", e)
+        }
+
+        loadAlbumAsync()
     }
 }

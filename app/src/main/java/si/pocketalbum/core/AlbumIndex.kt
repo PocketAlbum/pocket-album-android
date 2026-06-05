@@ -100,4 +100,8 @@ class AlbumIndex(val filesDir: Path) {
             Log.e("AlbumIndex", "Failed to store album index", e)
         }
     }
+
+    fun deleteAlbum(locator: AlbumLocator): Boolean {
+        return albums.remove(locator)
+    }
 }
