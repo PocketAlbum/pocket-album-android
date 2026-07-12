@@ -7,7 +7,8 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import android.widget.TextView
 import si.pocketalbum.R
-import si.pocketalbum.core.AlbumConnection
+import si.pocketalbum.core.models.MetadataModel
+import si.pocketalbum.core.models.YearIndex
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Date
@@ -36,14 +37,12 @@ class CurrentAlbum(context: Context, attrs: AttributeSet?) : FrameLayout(context
     }
 
     @SuppressLint("SetTextI18n")
-    fun showInfo(albumConnection: AlbumConnection)
+    fun showInfo(yearIndex: List<YearIndex>, meta: MetadataModel)
     {
-        val yearIndex = albumConnection.album.getYearIndex()
-        val meta = albumConnection.album.getMetadata()
         lblName.text = meta.name
         lblDescription.text = meta.description
         lblPhotos.text = yearIndex.sumOf { it.count }.toString(10)
-        lblSize.text = formatSize(albumConnection.fileSize ?: 0)
+        lblSize.text = formatSize(meta.size)
         lblUpdated.text = formatDate(meta.updated)
         lblCreated.text = formatDate(meta.created)
         if (yearIndex.count() == 0)

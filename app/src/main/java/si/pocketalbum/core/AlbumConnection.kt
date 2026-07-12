@@ -2,21 +2,27 @@ package si.pocketalbum.core
 
 import android.content.Context
 import si.pocketalbum.core.models.FilterModel
+import si.pocketalbum.core.models.MetadataModel
 import si.pocketalbum.core.sqlite.SQLiteAlbum
 import java.io.File
 
-class AlbumConnection(val album: IAlbum, var cache: ImageCache, val heatmaps: HeatmapCache) {
-    val metadata = album.getMetadata()
+class AlbumConnection(
+    val album: IAlbum,
+    var cache: ImageCache,
+    val heatmaps: HeatmapCache,
+    val metadata: MetadataModel
+) {
     val fileSize = if (album is SQLiteAlbum) album.fileSize else null
 
     companion object {
-        fun open(context: Context, dbFile: File): AlbumConnection {
+        suspend fun open(context: Context, dbFile: File): AlbumConnection {
             val album = SQLiteAlbum(context, dbFile)
-            val cache = ImageCache(album, FilterModel.Empty)
+            val cache = ImageCache.load(album)
             val heatmaps = HeatmapCache.load(album, context)
 
-            val connection = AlbumConnection(album, cache, heatmaps)
-            connection.metadata.validate()
+            val metadata = album.getMetadata()
+            metadata.validate()
+            val connection = AlbumConnection(album, cache, heatmaps, metadata)
 
             return connection
         }
@@ -26,11 +32,11 @@ class AlbumConnection(val album: IAlbum, var cache: ImageCache, val heatmaps: He
         album.close()
     }
 
-    fun changeFilter(newFilter: FilterModel) {
-        cache = ImageCache(album, newFilter)
+    suspend fun changeFilter(newFilter: FilterModel) {
+        cache = ImageCache.load(album, newFilter)
     }
 
-    fun buildHeatmaps(context: Context)
+    suspend fun buildHeatmaps(context: Context)
     {
         heatmaps.build(context)
     }

@@ -221,22 +221,24 @@ class SlidingGallery(context: Context, attrs: AttributeSet?) : FrameLayout(conte
         }
 
         btnShare.setOnClickListener {
-            val dir = File(context.cacheDir, "image-share")
-            dir.mkdirs()
-            val file = File(dir, image.filename)
-            file.createNewFile()
+            CoroutineScope(Job() + Dispatchers.IO).launch {
+                val dir = File(context.cacheDir, "image-share")
+                dir.mkdirs()
+                val file = File(dir, image.filename)
+                file.createNewFile()
 
-            val fileStream = FileOutputStream(file)
-            fileStream.write(connection?.album?.getImageData(image.id))
-            fileStream.close()
+                val fileStream = FileOutputStream(file)
+                fileStream.write(connection?.album?.getImageData(image.id))
+                fileStream.close()
 
-            val uri: Uri = getUriForFile(context, "si.pocketalbum", file)
-            ShareCompat.IntentBuilder(context)
-                .setType("image/jpeg")
-                .addStream(uri)
-                .setChooserTitle("Share image")
-                .setSubject("Shared image")
-                .startChooser()
+                val uri: Uri = getUriForFile(context, "si.pocketalbum", file)
+                ShareCompat.IntentBuilder(context)
+                    .setType("image/jpeg")
+                    .addStream(uri)
+                    .setChooserTitle("Share image")
+                    .setSubject("Shared image")
+                    .startChooser()
+            }
         }
 
         service?.caster?.castPhoto(image)

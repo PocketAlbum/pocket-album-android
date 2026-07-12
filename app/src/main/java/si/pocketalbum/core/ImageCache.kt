@@ -9,6 +9,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import si.pocketalbum.core.models.AlbumInfo
 import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.models.ImageThumbnail
 import si.pocketalbum.core.models.Interval
@@ -16,8 +17,12 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import kotlin.math.min
 
-class ImageCache(private val album: IAlbum, private val filter: FilterModel) {
-    val info = album.getInfo(filter)
+class ImageCache(private val album: IAlbum, private val filter: FilterModel, val info: AlbumInfo) {
+    companion object {
+        suspend fun load(album: IAlbum, filter: FilterModel = FilterModel.Empty): ImageCache {
+            return ImageCache(album, filter, album.getInfo(filter))
+        }
+    }
 
     private val futures = LruCache<Int, Deferred<HashMap<Int, ImageThumbnail>>>(10)
 
@@ -40,7 +45,7 @@ class ImageCache(private val album: IAlbum, private val filter: FilterModel) {
         }
     }
 
-    private fun loadImages(block: Int): HashMap<Int, ImageThumbnail>
+    private suspend fun loadImages(block: Int): HashMap<Int, ImageThumbnail>
     {
         try {
             val start = Instant.now()
@@ -80,7 +85,7 @@ class ImageCache(private val album: IAlbum, private val filter: FilterModel) {
         return BitmapFactory.decodeByteArray(data, 0, data.size)
     }
 
-    fun getData(id: String): Bitmap {
+    suspend fun getData(id: String): Bitmap {
         val data = album.getImageData(id)
         return BitmapFactory.decodeByteArray(data, 0, data.size)
     }

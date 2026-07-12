@@ -13,20 +13,22 @@ class MetadataModel (
     val name: String,
     val description: String?,
     val created: LocalDateTime,
-    val updated: LocalDateTime
+    val updated: LocalDateTime,
+    val size: Long
 ) {
     companion object {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
     }
 
-    public fun create(name: String) : MetadataModel {
+    fun create(name: String) : MetadataModel {
         return MetadataModel(
             id = Uuid.random(),
             version = "PocketAlbum 1.0",
             name = name,
             description = null,
             created = LocalDateTime.now(),
-            updated = LocalDateTime.now()
+            updated = LocalDateTime.now(),
+            size = 0
         )
     }
 

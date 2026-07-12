@@ -9,29 +9,29 @@ import si.pocketalbum.core.models.MetadataModel
 import si.pocketalbum.core.models.YearIndex
 
 interface IAlbum {
-    fun getMetadata(): MetadataModel
+    suspend fun getMetadata(): MetadataModel
 
-    fun getInfo(filter: FilterModel): AlbumInfo
+    suspend fun getInfo(filter: FilterModel): AlbumInfo
 
-    fun getImageInfo(id: String): ImageInfo
+    suspend fun getImageInfo(id: String): ImageInfo
 
-    fun getImageData(id: String): ByteArray
+    suspend fun getImageData(id: String): ByteArray
 
-    fun getImageThumbnail(id: String): ByteArray
+    suspend fun getImageThumbnail(id: String): ByteArray
 
-    fun list(filter: FilterModel, paging: Interval): List<ImageInfo>
+    suspend fun list(filter: FilterModel, paging: Interval): List<ImageInfo>
 
-    fun listThumbnails(filter: FilterModel, paging: Interval): List<ImageThumbnail>
+    suspend fun listThumbnails(filter: FilterModel, paging: Interval): List<ImageThumbnail>
 
-    fun imageExists(id: String): Boolean
+    suspend fun imageExists(id: String): Boolean
 
-    fun insert(image: ImageInfo, thumbnail: ByteArray, data: ByteArray)
+    suspend fun insert(image: ImageInfo, thumbnail: ByteArray, data: ByteArray)
 
-    fun getYearIndex(): List<YearIndex>
+    suspend fun getYearIndex(): List<YearIndex>
 
-    fun storeYearIndex(yearIndex: YearIndex)
+    suspend fun storeYearIndex(yearIndex: YearIndex)
 
-    fun removeYearIndex(year: Int)
+    suspend fun removeYearIndex(year: Int)
 
     fun close()
 }

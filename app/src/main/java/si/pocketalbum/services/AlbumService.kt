@@ -22,6 +22,7 @@ import si.pocketalbum.core.AlbumIndex.AlbumLocator
 import si.pocketalbum.core.HeatmapCache
 import si.pocketalbum.core.IntegrityChecker
 import si.pocketalbum.core.models.FilterModel
+import si.pocketalbum.core.models.ImageInfo
 import si.pocketalbum.streaming.AlbumCaster
 import si.pocketalbum.streaming.AlbumStreamer
 import java.io.File
@@ -64,7 +65,7 @@ class AlbumService : Service() {
         }
     }
 
-    private fun loadAlbum(locator: AlbumLocator? = null): AlbumConnection {
+    private suspend fun loadAlbum(locator: AlbumLocator? = null): AlbumConnection {
         try {
             val album = locator ?:
                 index.getAlbums().firstOrNull() ?:
@@ -106,7 +107,7 @@ class AlbumService : Service() {
         }
     }
 
-    fun changeFilter(newFilter: FilterModel) {
+    suspend fun changeFilter(newFilter: FilterModel) {
         connectionFlow.value!!.getCompleted().changeFilter(newFilter)
     }
 
@@ -124,7 +125,7 @@ class AlbumService : Service() {
         return index.getAlbums()
     }
     
-    fun import(uri: Uri, progress: (Double) -> Unit): AlbumLocator {
+    suspend fun import(uri: Uri, progress: (Double) -> Unit): AlbumLocator {
         var tempFile: File? = null
         var dstFile: File? = null
         try {

@@ -8,13 +8,13 @@ import java.util.function.Consumer
 class IntegrityChecker {
     companion object {
 
-        fun checkAllYears(album: IAlbum, progress: Consumer<Double>? = null)
+        suspend fun checkAllYears(album: IAlbum, progress: Consumer<Double>? = null)
         {
             val invalidYears = invalidYears(album, { p -> progress?.accept(p * 0.1) })
             checkYears(album, invalidYears, { p -> progress?.accept(0.1 + (p * 0.9)) })
         }
 
-        fun checkYears(album: IAlbum, years: List<Int>, progress: Consumer<Double>? = null)
+        suspend fun checkYears(album: IAlbum, years: List<Int>, progress: Consumer<Double>? = null)
         {
             var cnt = 0;
             for (y in years)
@@ -25,7 +25,7 @@ class IntegrityChecker {
             }
         }
 
-        fun invalidYears(album: IAlbum, progress: Consumer<Double>? = null): List<Int>
+        suspend fun invalidYears(album: IAlbum, progress: Consumer<Double>? = null): List<Int>
         {
             val info = album.getInfo(FilterModel.Empty)
             val index = album.getYearIndex().toMutableList()
@@ -53,7 +53,7 @@ class IntegrityChecker {
             return invalidYears.distinct().sorted().toList()
         }
 
-        fun checkYear(album: IAlbum, year: Int)
+        suspend fun checkYear(album: IAlbum, year: Int)
         {
             var filter = FilterModel(Interval(year.toLong()), null, null)
             var info = album.getInfo(filter)

@@ -32,11 +32,11 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
     private val yearQuery = "CAST(substr(created, 1, 4) AS SIGNED) AS y"
     private val hourQuery = "CAST(substr(created, 12, 2) AS SIGNED) AS h"
 
-    override fun getMetadata(): MetadataModel {
+    override suspend fun getMetadata(): MetadataModel {
         return MetadataHelper.read(db)
     }
 
-    override fun getInfo(filter: FilterModel): AlbumInfo {
+    override suspend fun getInfo(filter: FilterModel): AlbumInfo {
         val where = " WHERE " + getWhere(filter)
         val cursor = db.rawQuery(
             "SELECT $yearQuery, COUNT(*), $hourQuery FROM image $where GROUP BY y;",
@@ -65,7 +65,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         }
     }
 
-    override fun getImageInfo(id: String): ImageInfo {
+    override suspend fun getImageInfo(id: String): ImageInfo {
         val cursor = db.query("image",
             arrayOf("id", "fileName", "contentType", "created", "width", "height", "size", "crc",
             "latitude", "longitude"),
@@ -117,7 +117,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         return """${paging.from}, $count""";
     }
 
-    override fun listThumbnails(filter: FilterModel, paging: Interval): List<ImageThumbnail> {
+    override suspend fun listThumbnails(filter: FilterModel, paging: Interval): List<ImageThumbnail> {
         val cursor = db.query("image",
             arrayOf("id", "fileName", "contentType", "created", "width", "height", "size", "crc",
                 "latitude", "longitude", "thumbnail", yearQuery, hourQuery),
@@ -137,7 +137,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         return thumbnails
     }
 
-    override fun getImageData(id: String): ByteArray {
+    override suspend fun getImageData(id: String): ByteArray {
         val cursor = db.query("image", arrayOf("data"),
             "Id = ?", arrayOf(id),
             null, null, null, null)
@@ -151,7 +151,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         }
     }
 
-    override fun getImageThumbnail(id: String): ByteArray {
+    override suspend fun getImageThumbnail(id: String): ByteArray {
         val cursor = db.query("image", arrayOf("thumbnail"),
             "Id = ?", arrayOf(id),
             null, null, null, null)
@@ -165,7 +165,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         }
     }
 
-    override fun list(filter: FilterModel, paging: Interval): List<ImageInfo> {
+    override suspend fun list(filter: FilterModel, paging: Interval): List<ImageInfo> {
         val cursor = db.query("image",
             arrayOf("id", "fileName", "contentType", "created", "width", "height", "size", "crc",
                 "latitude", "longitude", yearQuery, hourQuery),
@@ -183,7 +183,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         return infos
     }
 
-    override fun insert(image: ImageInfo, thumbnail: ByteArray, data: ByteArray) {
+    override suspend fun insert(image: ImageInfo, thumbnail: ByteArray, data: ByteArray) {
         db.insert("image", null, ContentValues().apply {
             put("id", image.id)
             put("fileName", image.filename)
@@ -200,7 +200,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         })
     }
 
-    override fun imageExists(id: String): Boolean {
+    override suspend fun imageExists(id: String): Boolean {
         val query = """
             SELECT EXISTS(SELECT 1 FROM image WHERE id = ?)
         """
@@ -238,7 +238,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         )
     }
 
-    override fun storeYearIndex(yearIndex: YearIndex) {
+    override suspend fun storeYearIndex(yearIndex: YearIndex) {
         db.insert("index", null, ContentValues().apply {
             put("year", yearIndex.year)
             put("count", yearIndex.count)
@@ -247,7 +247,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         })
     }
 
-    override fun getYearIndex(): List<YearIndex> {
+    override suspend fun getYearIndex(): List<YearIndex> {
         val cursor = db.query("\"index\"", arrayOf("year", "count", "crc", "size"),
             null, null, null, null, "year")
 
@@ -265,7 +265,7 @@ class SQLiteAlbum(context: Context, file: File) : IAlbum, Closeable {
         return index
     }
 
-    override fun removeYearIndex(year: Int) {
+    override suspend fun removeYearIndex(year: Int) {
         db.delete("index", "year = ?", arrayOf(year.toString()))
     }
 

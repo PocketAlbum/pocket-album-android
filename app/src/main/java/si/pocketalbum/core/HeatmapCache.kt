@@ -30,7 +30,7 @@ class HeatmapCache(val album: IAlbum, val years: MutableMap<Int, Heatmap>) {
     }
 
     companion object {
-        fun load(album: IAlbum, context: Context): HeatmapCache {
+        suspend fun load(album: IAlbum, context: Context): HeatmapCache {
             val id = album.getMetadata().id
             val heatmapsDir = File(context.cacheDir, "heatmaps")
             heatmapsDir.mkdirs()
@@ -57,7 +57,7 @@ class HeatmapCache(val album: IAlbum, val years: MutableMap<Int, Heatmap>) {
         }
     }
 
-    fun build(context: Context) {
+    suspend fun build(context: Context) {
         Log.i("HeatmapCache", "Starting to build missing heatmaps")
         val yearIndex = album.getYearIndex()
         yearIndex.forEach {
@@ -77,7 +77,7 @@ class HeatmapCache(val album: IAlbum, val years: MutableMap<Int, Heatmap>) {
         save(context, yearIndex)
     }
 
-    fun save(context: Context, yearIndex: List<YearIndex>) {
+    suspend fun save(context: Context, yearIndex: List<YearIndex>) {
         val id = album.getMetadata().id
         val heatmapsDir = File(context.cacheDir, "heatmaps")
         heatmapsDir.mkdirs()
@@ -90,7 +90,7 @@ class HeatmapCache(val album: IAlbum, val years: MutableMap<Int, Heatmap>) {
         Log.i("HeatmapCache", "Heatmap cache size: ${array.size / 1000} kB")
     }
 
-    private fun buildYear(year: Int): Heatmap {
+    private suspend fun buildYear(year: Int): Heatmap {
         Log.i("HeatmapCache", "Building heatmap for year $year")
 
         val filter = FilterModel(Interval(year.toLong()), null, null)

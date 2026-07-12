@@ -2,6 +2,7 @@ package si.pocketalbum.streaming
 
 import android.util.Log
 import fi.iki.elonen.NanoHTTPD
+import kotlinx.coroutines.runBlocking
 import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.services.AlbumService
 import java.io.ByteArrayInputStream
@@ -26,7 +27,9 @@ class AlbumStreamer(
             val imageDataMatch = Regex("/images/([a-f\\d]+)/data$").matchEntire(session.uri)
             if (imageDataMatch != null)
             {
-                val data = connection.album.getImageData(imageDataMatch.groupValues[1])
+                val data = runBlocking {
+                    connection.album.getImageData(imageDataMatch.groupValues[1])
+                }
 
                 return newFixedLengthResponse(
                     Response.Status.OK,

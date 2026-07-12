@@ -18,7 +18,8 @@ class MetadataHelper {
             get(db, "name"),
             get(db, "description"),
             getDateTime(db, "created"),
-            getDateTime(db, "updated")
+            getDateTime(db, "updated"),
+            getLong(db, "pragma page_size") * getLong(db, "pragma page_count")
         )
 
         fun get(db: SQLiteDatabase, key: String): String {
@@ -30,6 +31,18 @@ class MetadataHelper {
             }
             catch (_: Exception) {
                 return ""
+            }
+        }
+
+        fun getLong(db: SQLiteDatabase, query: String): Long {
+            try {
+                db.rawQuery(query, arrayOf()).use {
+                    it.moveToFirst()
+                    return it.getLong(0)
+                }
+            }
+            catch (_: Exception) {
+                return 0
             }
         }
 

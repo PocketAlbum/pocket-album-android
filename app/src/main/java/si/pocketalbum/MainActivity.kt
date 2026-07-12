@@ -37,6 +37,7 @@ import si.pocketalbum.view.search.SearchPanel
 import si.pocketalbum.view.timeline.DateScroller
 import androidx.core.view.isVisible
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : FragmentActivity() {
 
@@ -175,7 +176,9 @@ class MainActivity : FragmentActivity() {
 
         pnlSettings.passLifecycleOwner(this)
         pnlSearch.setOnSearchListener {
-            albumService.changeFilter(it)
+            runBlocking {
+                albumService.changeFilter(it)
+            }
             adapter.notifyDataSetChanged()
             dateScroller.loadAlbum()
             slidingGallery.loadAlbum(window)

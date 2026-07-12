@@ -8,14 +8,12 @@ import android.os.IBinder
 import android.util.Log
 import android.view.View.TEXT_ALIGNMENT_TEXT_END
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -25,6 +23,7 @@ import kotlinx.coroutines.launch
 import si.pocketalbum.core.AlbumConnection
 import si.pocketalbum.core.models.FilterModel
 import si.pocketalbum.core.models.Interval
+import si.pocketalbum.core.models.YearIndex
 import si.pocketalbum.services.AlbumService
 import si.pocketalbum.view.CurrentAlbum
 import si.pocketalbum.view.formatSize
@@ -88,10 +87,12 @@ class StatisticsActivity : ComponentActivity() {
         CoroutineScope(Job() + Dispatchers.IO).launch {
             try {
                 val con = connection.await()
+                val yearIndex = con.album.getYearIndex()
+                val meta = con.album.getMetadata()
                 runOnUiThread {
-                    currentAlbum.showInfo(con)
-                    showTable(table, con)
+                    currentAlbum.showInfo(yearIndex, meta)
                 }
+                showTable(table, con, yearIndex)
             }
             catch (e: Exception) {
                 Log.e("MainActivity", "Failed to load album", e)
@@ -100,11 +101,11 @@ class StatisticsActivity : ComponentActivity() {
         }
     }
 
-    private fun CoroutineScope.showTable(
+    suspend fun showTable(
         layout: TableLayout,
-        connection: AlbumConnection
+        connection: AlbumConnection,
+        yearIndex: List<YearIndex>
     ) {
-        val yearIndex = connection.album.getYearIndex()
         for (y in yearIndex)
         {
             val filter = FilterModel(Interval(y.year.toLong()), null, null)
@@ -129,7 +130,9 @@ class StatisticsActivity : ComponentActivity() {
 
             val v = TextView(baseContext)
             v.textAlignment = TEXT_ALIGNMENT_TEXT_END
-            layout.addView(row)
+            runOnUiThread {
+                layout.addView(row)
+            }
         }
     }
 }
